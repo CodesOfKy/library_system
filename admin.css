@@ -1,0 +1,104 @@
+* { box-sizing: border-box; }
+
+body {
+    font-family: Arial, Helvetica, sans-serif;
+    background: #fafafa;
+    color: #222;
+    margin: 0;
+}
+
+/* Header */
+header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 16px 32px;
+    background: #fff;
+    border-bottom: 1px solid #e5e5e5;
+}
+header h2 { margin: 0; font-size: 18px; font-weight: 600; }
+header span { font-size: 14px; color: #666; margin-right: 12px; }
+
+button {
+    padding: 7px 14px;
+    border: 1px solid #222;
+    background: #222;
+    color: #fff;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 13px;
+}
+button:hover { background: #fff; color: #222; }
+
+/* Layout */
+main { max-width: 1100px; margin: 0 auto; padding: 32px; }
+
+/* Summary cards */
+.cards {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+    gap: 16px;
+    margin-bottom: 32px;
+}
+.card {
+    background: #fff;
+    border: 1px solid #e5e5e5;
+    border-radius: 6px;
+    padding: 18px;
+}
+.card p { margin: 0; font-size: 13px; color: #777; }
+.card h1 { margin: 8px 0 0; font-size: 30px; font-weight: 600; }
+
+/* Panels and tables */
+.panel {
+    background: #fff;
+    border: 1px solid #e5e5e5;
+    border-radius: 6px;
+    padding: 20px;
+    margin-bottom: 32px;
+}
+.panel h3 { margin: 0 0 14px; font-size: 16px; font-weight: 600; }
+
+.scroll { overflow-x: auto; }
+
+table { width: 100%; border-collapse: collapse; font-size: 14px; }
+th, td { text-align: left; padding: 10px 12px; border-bottom: 1px solid #eee; }
+th { font-size: 12px; text-transform: uppercase; letter-spacing: .5px; color: #777; }
+tbody tr:hover { background: #fafafa; }
+
+/* Search box */
+#search {
+    width: 100%;
+    max-width: 280px;
+    padding: 8px 10px;
+    margin-bottom: 14px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    font-size: 14px;
+}
+#search:focus { outline: none; border-color: #222; }
+
+/* Status badges */
+.badge {
+    display: inline-block;
+    padding: 2px 10px;
+    border-radius: 10px;
+    font-size: 12px;
+    border: 1px solid;
+}
+.badge.in  { color: #15803d; border-color: #15803d; }
+.badge.out { color: #777;    border-color: #bbb; }
+
+/* Filter buttons */
+.filters { display: flex; gap: 8px; margin-bottom: 14px; flex-wrap: wrap; }
+.filters a {
+    padding: 6px 14px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    font-size: 13px;
+    color: #222;
+    text-decoration: none;
+    background: #fff;
+}
+.filters a:hover { border-color: #222; }
+.filters a.active { background: #222; border-color: #222; color: #fff; }
