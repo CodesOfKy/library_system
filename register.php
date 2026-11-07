@@ -31,19 +31,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 <head>
   <meta charset="UTF-8">
   <title>Register Student</title>
-  <style>
-    body { font-family: Arial, sans-serif; max-width: 420px; margin: 40px auto; }
-    label { display: block; margin-top: 14px; font-weight: bold; }
-    input { width: 100%; padding: 10px; margin-top: 4px; box-sizing: border-box; font-size: 16px; }
-    #uid { background: #f0f0f0; }
-    button { margin-top: 20px; padding: 12px; width: 100%; font-size: 16px; cursor: pointer; }
-    .msg { padding: 10px; border-radius: 4px; }
-    .ok { background: #d4edda; }
-    .bad { background: #f8d7da; }
-    #status { font-size: 14px; color: #555; }
-  </style>
+  <link rel="stylesheet" href="design.css">
 </head>
-<body>
+<body class="register">
   <h2>Register Student</h2>
 
   <?php if ($message): ?>
@@ -58,7 +48,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     <input type="text" name="student_id" required>
 
     <label>RFID Card</label>
-    <input type="text" name="rfid_uid" id="uid" placeholder="Tap your card on the reader..." readonly required>
+    <input type="hidden" name="rfid_uid" id="uid_real">
+    <input type="text" id="uid" placeholder="Tap your card on the reader..." readonly required>
     <p id="status">Waiting for card...</p>
 
     <button type="submit">Submit</button>
@@ -84,9 +75,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
         if (id > lastId) {
           lastId = id;
-          document.getElementById("uid").value = scan.uid;
+          document.getElementById("uid_real").value = scan.uid;   // real UID that gets submitted
+          document.getElementById("uid").value = scan.registered
+            ? "*".repeat(String(scan.uid).length)   // already registered: hide it
+            : scan.uid;
           document.getElementById("status").textContent = scan.registered
-            ? "Warning: this card is already registered to " + scan.name + "."
+            ? "Warning: this card is already registered."
             : "Card detected: " + scan.uid;
         }
       } catch (e) {
