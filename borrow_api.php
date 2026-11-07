@@ -44,8 +44,8 @@ if ($action === 'latest') {
     $stmt->execute();
     $teacher = $stmt->get_result()->fetch_assoc();
 
-    // Open loan (book not yet returned)
-    $loan = null;
+    // Open loans (books not yet returned), newest first
+    $loans = [];
     if ($teacher) {
         $stmt = $conn->prepare("
             SELECT id, book_title,
@@ -53,14 +53,15 @@ if ($action === 'latest') {
                    (due_date < CURDATE()) AS overdue
             FROM book_loans
             WHERE teacher_id = ? AND returned_at IS NULL
-            ORDER BY id DESC LIMIT 1");
+            ORDER BY id DESC");
         $stmt->bind_param("i", $teacher['id']);
         $stmt->execute();
-        $loan = $stmt->get_result()->fetch_assoc();
-        if ($loan) {
-            $loan['id'] = (int)$loan['id'];
-            $loan['overdue'] = (bool)$loan['overdue'];
+        $loans = $stmt->get_result()->fetch_all(MYSQLI_ASSOC);
+        foreach ($loans as &$l) {
+            $l['id'] = (int)$l['id'];
+            $l['overdue'] = (bool)$l['overdue'];
         }
+        unset($l);
     }
 
     echo json_encode([
@@ -69,7 +70,7 @@ if ($action === 'latest') {
         "is_student"   => $isStudent,
         "registered"   => (bool)$teacher,
         "teacher_name" => $teacher['name'] ?? "",
-        "loan"         => $loan
+        "loans"        => $loans
     ]);
     exit;
 }
@@ -78,14 +79,22 @@ if ($action === 'latest') {
 if ($action === 'borrow') {
     $uid  = trim($_POST['uid'] ?? '');
     $name = trim($_POST['name'] ?? '');
-    $book = trim($_POST['book_title'] ?? '');
+    $books = $_POST['book_title'] ?? [];          // one or more book titles
+    if (!is_array($books)) $books = [$books];
+    $books = array_values(array_filter(array_map('trim', $books), fn($b) => $b !== ''));
     $due  = $_POST['due_date'] ?? '';
 
-    if ($uid === '' || $book === '') {
+    if ($uid === '' || !$books) {
         fail("Book name is required.");
     }
-    if (strlen($book) > 200 || strlen($name) > 100) {
-        fail("Name or book title is too long.");
+    if (count($books) > 10) {
+        fail("You can borrow up to 10 books at a time.");
+    }
+    foreach ($books as $b) {
+        if (strlen($b) > 200) fail("Book title is too long.");
+    }
+    if (strlen($name) > 100) {
+        fail("Name is too long.");
     }
     if (!preg_match('/^(\d{4})-(\d{2})-(\d{2})$/', $due, $m) || !checkdate((int)$m[2], (int)$m[3], (int)$m[1])) {
         fail("Enter a valid return date.");
@@ -129,37 +138,46 @@ if ($action === 'borrow') {
         $teacherName = $name;
     }
 
-    // One active book at a time
-    $stmt = $conn->prepare("SELECT id FROM book_loans WHERE teacher_id = ? AND returned_at IS NULL LIMIT 1");
-    $stmt->bind_param("i", $teacherId);
-    $stmt->execute();
-    if ($stmt->get_result()->fetch_assoc()) {
-        fail("This teacher still has an unreturned book. Scan the card to return it first.");
-    }
-
+    // Save every book (all or nothing)
+    $conn->begin_transaction();
     $stmt = $conn->prepare("INSERT INTO book_loans (teacher_id, book_title, due_date) VALUES (?, ?, ?)");
-    $stmt->bind_param("iss", $teacherId, $book, $due);
-    if (!$stmt->execute()) {
-        fail("Could not save the loan.");
+    foreach ($books as $book) {
+        $stmt->bind_param("iss", $teacherId, $book, $due);
+        if (!$stmt->execute()) {
+            $conn->rollback();
+            fail("Could not save the loan.");
+        }
     }
+    $conn->commit();
 
+    $what = count($books) === 1 ? "\"{$books[0]}\"" : count($books) . " books";
     echo json_encode([
         "success" => true,
-        "message" => "$teacherName borrowed \"$book\". Due on $due."
+        "message" => "$teacherName borrowed $what. Due on $due."
     ]);
     exit;
 }
 
-// Return a book
+// Return one or more books
 if ($action === 'return') {
-    $loanId = (int)($_POST['loan_id'] ?? 0);
+    $ids = $_POST['loan_ids'] ?? ($_POST['loan_id'] ?? []);
+    if (!is_array($ids)) $ids = [$ids];
+    $ids = array_values(array_unique(array_filter(array_map('intval', $ids))));
+
+    if (!$ids) {
+        fail("No book selected.");
+    }
 
     $stmt = $conn->prepare("UPDATE book_loans SET returned_at = NOW() WHERE id = ? AND returned_at IS NULL");
-    $stmt->bind_param("i", $loanId);
-    $stmt->execute();
+    $returned = 0;
+    foreach ($ids as $loanId) {
+        $stmt->bind_param("i", $loanId);
+        $stmt->execute();
+        if ($stmt->affected_rows > 0) $returned++;
+    }
 
-    if ($stmt->affected_rows > 0) {
-        echo json_encode(["success" => true]);
+    if ($returned > 0) {
+        echo json_encode(["success" => true, "returned" => $returned]);
     } else {
         fail("Already returned or not found.");
     }
@@ -172,6 +190,7 @@ if ($action === 'list') {
         SELECT l.id, t.name, l.book_title,
                DATE_FORMAT(l.borrowed_at, '%b %d, %Y %h:%i %p') AS borrowed_text,
                DATE_FORMAT(l.due_date, '%b %d, %Y') AS due_text,
+               DATEDIFF(l.due_date, DATE(l.borrowed_at)) AS days,
                DATE_FORMAT(l.returned_at, '%b %d, %Y %h:%i %p') AS returned_text,
                CASE WHEN l.returned_at IS NOT NULL THEN 'returned'
                     WHEN l.due_date < CURDATE() THEN 'overdue'

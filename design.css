@@ -67,3 +67,21 @@ body.register { max-width: 420px; margin: 40px auto; }
 .popup-actions { display: flex; gap: 10px; justify-content: center; flex-wrap: wrap; }
 .popup-actions button { margin: 0; }
 .popup-box button.ghost { background: #fff; color: #333; border: 1px solid #999; }
+
+/* Several books: pick list, book rows, multi-line popup text (borrow.php) */
+.popup-box p { white-space: pre-line; }
+.popup-box button:disabled { opacity: .5; cursor: not-allowed; }
+
+.pick-list { display: flex; flex-direction: column; gap: 8px; margin-bottom: 18px; max-height: 260px; overflow-y: auto; text-align: left; }
+.popup-box .pick-list label.pick-item { display: flex; align-items: center; gap: 12px; margin: 0; padding: 10px 14px; background: #fff; color: #333; border: 1px solid #999; border-radius: 6px; font-size: 15px; font-weight: normal; cursor: pointer; }
+.popup-box .pick-list label.pick-item:hover { background: #f1f1f1; }
+.pick-item input[type="checkbox"] { width: 18px; height: 18px; margin: 0; flex: none; }
+.pick-item div { display: flex; flex-direction: column; gap: 2px; }
+.pick-item span { font-size: 13px; color: #666; }
+.pick-item .pick-late { color: #dc3545; font-weight: bold; }
+
+.book-row { display: flex; gap: 8px; margin-bottom: 8px; }
+.book-row input { flex: 1; margin: 0; }
+.book-row .book-remove { padding: 0 12px; }
+.book-row .book-remove[hidden] { display: none; }
+#addBookBtn { margin: 0 0 12px; }
