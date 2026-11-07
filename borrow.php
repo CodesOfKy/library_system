@@ -11,6 +11,7 @@ if (!isset($_SESSION['admin_id'])) {
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Teacher Borrow &amp; Return</title>
+    <link rel="stylesheet" href="design.css">
     <link rel="stylesheet" href="admin.css">
 </head>
 <body>
@@ -85,6 +86,28 @@ if (!isset($_SESSION['admin_id'])) {
         </div>
     </main>
 
+    <!-- Popup shown after a book is borrowed or returned -->
+    <div id="popup" class="popup" hidden>
+        <div class="popup-box">
+            <div class="popup-icon">&#10003;</div>
+            <h2 id="popupTitle"></h2>
+            <p id="popupText"></p>
+            <button type="button" id="popupOk">OK</button>
+        </div>
+    </div>
+
+    <!-- Popup: ask before returning a book -->
+    <div id="confirmPopup" class="popup" hidden>
+        <div class="popup-box">
+            <h2>Are you sure you want to return this book?</h2>
+            <p id="confirmText"></p>
+            <div class="popup-actions">
+                <button type="button" id="confirmYes">Yes, return it</button>
+                <button type="button" id="confirmNo" class="ghost">No, cancel</button>
+            </div>
+        </div>
+    </div>
+
     <script>
     const $ = id => document.getElementById(id);
     const esc = s => String(s).replace(/[&<>"']/g, c =>
@@ -116,6 +139,24 @@ if (!isset($_SESSION['admin_id'])) {
         el.className = 'status ' + type;
     }
 
+    // ---------- Popup ----------
+    let popupTimer = null;
+
+    function hidePopup() {
+        $('popup').hidden = true;
+        clearTimeout(popupTimer);
+    }
+
+    function showPopup(title, text) {
+        $('popupTitle').textContent = title;
+        $('popupText').textContent = text;
+        $('popup').hidden = false;
+        clearTimeout(popupTimer);
+        popupTimer = setTimeout(hidePopup, 4000);   // closes by itself after 4 seconds
+    }
+
+    $('popupOk').addEventListener('click', hidePopup);
+
     function hideForm() {
         $('borrowForm').classList.add('hidden');
     }
@@ -135,12 +176,54 @@ if (!isset($_SESSION['admin_id'])) {
         (isNew ? $('tName') : $('bookTitle')).focus();
     }
 
+    // ---------- Confirm return ----------
+    let pendingReturn = null;
+
+    function hideConfirm() {
+        $('confirmPopup').hidden = true;
+        pendingReturn = null;
+    }
+
+    function askReturn(d) {
+        pendingReturn = d;
+        $('confirmText').textContent = '"' + d.loan.book_title + '" borrowed by ' + d.teacher_name + '.';
+        $('confirmPopup').hidden = false;
+        setStatus('Waiting for confirmation to return the book...');
+    }
+
+    async function returnBook(d) {
+        const r = await api('return', { loan_id: d.loan.id });
+        if (r && r.success) {
+            setStatus(d.teacher_name + ' returned "' + d.loan.book_title + '"' +
+                      (d.loan.overdue ? ' (late, was due ' + d.loan.due_text + ').' : '.'), 'ok');
+            showPopup('Book has been returned!',
+                      '"' + d.loan.book_title + '" was returned by ' + d.teacher_name +
+                      (d.loan.overdue ? ' (late, was due ' + d.loan.due_text + ').' : '.'));
+            loadLoans();
+        } else if (r) {
+            setStatus(r.message, 'error');
+        }
+    }
+
+    $('confirmYes').addEventListener('click', () => {
+        const d = pendingReturn;
+        hideConfirm();
+        if (d) returnBook(d);
+    });
+
+    $('confirmNo').addEventListener('click', () => {
+        hideConfirm();
+        setStatus('Return cancelled.');
+    });
+
     async function handleScan(d) {
         // Ignore the same card read again within 5 seconds
         const now = Date.now();
         if (d.uid === lastUid && now - lastTime < 5000) return;
         lastUid = d.uid;
         lastTime = now;
+
+        hideConfirm();   // a new scan closes any old confirm popup
 
         if (d.is_student) {
             hideForm();
@@ -151,14 +234,7 @@ if (!isset($_SESSION['admin_id'])) {
         // Registered teacher with a book out -> return it
         if (d.registered && d.loan) {
             hideForm();
-            const r = await api('return', { loan_id: d.loan.id });
-            if (r && r.success) {
-                setStatus(d.teacher_name + ' returned "' + d.loan.book_title + '"' +
-                          (d.loan.overdue ? ' (late, was due ' + d.loan.due_text + ').' : '.'), 'ok');
-                loadLoans();
-            } else if (r) {
-                setStatus(r.message, 'error');
-            }
+            askReturn(d);
             return;
         }
 
@@ -190,8 +266,11 @@ if (!isset($_SESSION['admin_id'])) {
         });
         if (!r) return;
         if (r.success) {
+            const book = $('bookTitle').value;
+            const due = $('dueDate').value;
             hideForm();
             setStatus(r.message, 'ok');
+            showPopup('Book has been borrowed!', '"' + book + '" is due back on ' + due + '.');
             loadLoans();
         } else {
             setStatus(r.message, 'error');

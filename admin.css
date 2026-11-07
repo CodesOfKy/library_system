@@ -156,3 +156,48 @@ button.ghost:hover { background: #222; color: #fff; }
 .badge.borrowed { color: #b45309; border-color: #b45309; }
 .badge.overdue  { color: #b91c1c; border-color: #b91c1c; }
 .badge.returned { color: #777;    border-color: #bbb; }
+
+/* Students: edit / delete */
+.actions { white-space: nowrap; }
+.actions button { padding: 4px 10px; font-size: 12px; margin-right: 4px; }
+.actions .edit { background: #fff; color: #222; }
+.actions .edit:hover { background: #222; color: #fff; }
+.actions .delete { background: #fff; color: #b91c1c; border-color: #b91c1c; }
+.actions .delete:hover { background: #b91c1c; color: #fff; }
+
+/* Edit pop-up */
+dialog {
+    border: 1px solid #e5e5e5;
+    border-radius: 6px;
+    padding: 22px;
+    width: min(380px, 92vw);
+}
+dialog::backdrop { background: rgba(0, 0, 0, .35); }
+dialog h3 { margin: 0 0 10px; font-size: 16px; font-weight: 600; }
+dialog form { display: grid; gap: 6px; }
+dialog label {
+    font-size: 12px;
+    text-transform: uppercase;
+    letter-spacing: .5px;
+    color: #777;
+    margin-top: 6px;
+}
+dialog input {
+    padding: 8px 10px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    font-size: 14px;
+    width: 100%;
+}
+dialog input:focus { outline: none; border-color: #222; }
+dialog input[readonly] { background: #fafafa; color: #777; }
+dialog .form-action { display: flex; gap: 8px; margin-top: 12px; }
+.form-error {
+    margin: 0 0 6px;
+    padding: 8px 10px;
+    border: 1px solid #b91c1c;
+    border-radius: 4px;
+    color: #b91c1c;
+    font-size: 13px;
+}
+.form-error:empty { display: none; }

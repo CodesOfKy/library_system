@@ -1,0 +1,69 @@
+/* =========================================================
+   design.css - shared styles for library.php and register.php
+   Each page sets a class on <body> (library / register) so the
+   two pages' styles don't clash.
+   ========================================================= */
+
+body { font-family: Arial, sans-serif; }
+
+/* =========================
+   library.php  (body.library)
+   ========================= */
+body.library { max-width: 1200px; margin: 40px auto; }
+
+.library #card { padding: 30px; text-align: center; border-radius: 8px; background: #eee; font-size: 20px; }
+.library #card.ok { background: #d4edda; }
+.library #card.out { background: #cfe2ff; }
+.library #card.bad { background: #f8d7da; }
+.library #card h2 { margin: 0 0 10px; }
+
+.library table { width: 100%; border-collapse: collapse; margin-top: 10px; }
+.library th, .library td { border: 1px solid #999; padding: 8px; text-align: left; }
+
+.library .tables { display: flex; gap: 20px; flex-wrap: wrap; }
+.library .tables > div { flex: 1; min-width: 320px; }
+
+.library #visitors { margin-bottom: 20px; }
+.library #visitors h1 { margin-bottom: 5px; }
+.library #rangeLabel { color: #555; margin: 0 0 10px; }
+.library .filters { display: flex; gap: 8px; flex-wrap: wrap; align-items: center; }
+.library .filters button { padding: 8px 14px; cursor: pointer; border: 1px solid #999; border-radius: 4px; background: #fff; }
+.library .filters button.active { background: #333; color: #fff; }
+.library .filters input[type="date"] { padding: 7px; }
+
+/* =========================
+   register.php  (body.register)
+   ========================= */
+body.register { max-width: 420px; margin: 40px auto; }
+
+.register label { display: block; margin-top: 14px; font-weight: bold; }
+.register input { width: 100%; padding: 10px; margin-top: 4px; box-sizing: border-box; font-size: 16px; }
+.register #uid { background: #f0f0f0; }
+.register button { margin-top: 20px; padding: 12px; width: 100%; font-size: 16px; cursor: pointer; }
+.register .msg { padding: 10px; border-radius: 4px; }
+.register .ok { background: #d4edda; }
+.register .bad { background: #f8d7da; }
+.register #status { font-size: 14px; color: #555; }
+
+/* Cancel-login popup (library.php) */
+.library .modal { position: fixed; inset: 0; background: rgba(0,0,0,.5); display: flex; align-items: center; justify-content: center; z-index: 10; }
+.library .modal[hidden] { display: none; }
+.library .modal-box { background: #fff; padding: 30px; border-radius: 8px; max-width: 420px; width: 90%; text-align: center; font-size: 18px; }
+.library .modal-box h2 { margin: 0 0 10px; }
+.library .modal-actions { display: flex; gap: 10px; justify-content: center; flex-wrap: wrap; margin-top: 20px; }
+.library .modal-actions button { padding: 10px 16px; font-size: 16px; cursor: pointer; border: 1px solid #999; border-radius: 4px; background: #fff; }
+.library .modal-actions #btnCancelYes { background: #dc3545; color: #fff; border-color: #dc3545; }
+
+/* =========================
+   borrow.php popup ("Book has been borrowed / returned")
+   ========================= */
+.popup { position: fixed; inset: 0; background: rgba(0,0,0,.5); display: flex; align-items: center; justify-content: center; z-index: 1000; }
+.popup[hidden] { display: none; }
+.popup-box { background: #fff; padding: 30px; border-radius: 10px; max-width: 400px; width: 90%; text-align: center; box-shadow: 0 10px 30px rgba(0,0,0,.3); }
+.popup-icon { width: 56px; height: 56px; line-height: 56px; margin: 0 auto 12px; border-radius: 50%; background: #d4edda; color: #198754; font-size: 30px; }
+.popup-box h2 { margin: 0 0 8px; }
+.popup-box p { margin: 0 0 18px; color: #555; }
+.popup-box button { padding: 10px 28px; font-size: 16px; cursor: pointer; border: 0; border-radius: 6px; background: #333; color: #fff; }
+.popup-actions { display: flex; gap: 10px; justify-content: center; flex-wrap: wrap; }
+.popup-actions button { margin: 0; }
+.popup-box button.ghost { background: #fff; color: #333; border: 1px solid #999; }

@@ -100,14 +100,17 @@ $recent = $conn->query("
                             <th>Status</th>
                             <th>Last Login</th>
                             <th>Total Visits</th>
+                            <th>Actions</th>
                         </tr>
                     </thead>
                     <tbody>
                     <?php if (!$students): ?>
-                        <tr><td colspan="6">No students found.</td></tr>
+                        <tr><td colspan="7">No students found.</td></tr>
                     <?php endif; ?>
                     <?php foreach ($students as $s): ?>
-                        <tr>
+                        <tr data-id="<?= htmlspecialchars($s['student_id']) ?>"
+                            data-name="<?= htmlspecialchars($s['name']) ?>"
+                            data-uid="<?= htmlspecialchars($s['rfid_uid']) ?>">
                             <td><?= htmlspecialchars($s['student_id']) ?></td>
                             <td><?= htmlspecialchars($s['name']) ?></td>
                             <td><?= htmlspecialchars($s['rfid_uid']) ?></td>
@@ -118,6 +121,10 @@ $recent = $conn->query("
                             </td>
                             <td><?= htmlspecialchars($s['last_login'] ?? '—') ?></td>
                             <td><?= (int)$s['total_visits'] ?></td>
+                            <td class="actions">
+                                <button type="button" class="edit">Edit</button>
+                                <button type="button" class="delete">Delete</button>
+                            </td>
                         </tr>
                     <?php endforeach; ?>
                     </tbody>
@@ -143,7 +150,7 @@ $recent = $conn->query("
                     </thead>
                     <tbody>
                     <?php if (!$recent): ?>
-                        <tr><td colspan="4">No activity found.</td></tr>
+                        <tr><td colspan="4">No activity found for this filter.</td></tr>
                     <?php endif; ?>
                     <?php foreach ($recent as $r): ?>
                         <tr>
@@ -163,17 +170,101 @@ $recent = $conn->query("
         </div>
     </main>
 
+    <!-- Edit student pop-up -->
+    <dialog id="editDialog">
+        <form id="editForm">
+            <h3>Edit Student</h3>
+            <p id="editMsg" class="form-error"></p>
+
+            <label for="editId">Student ID</label>
+            <input type="text" id="editId" readonly>
+
+            <label for="editName">Name</label>
+            <input type="text" id="editName" maxlength="100" required>
+
+            <label for="editUid">RFID UID</label>
+            <input type="text" id="editUid" maxlength="50" required>
+
+            <div class="form-actions">
+                <button type="submit">Save</button>
+                <button type="button" id="editCancel" class="ghost">Cancel</button>
+            </div>
+        </form>
+    </dialog>
+
     <script>
-    // Live search on the students table
-    document.getElementById('search').addEventListener('input', function () {
+    const $ = id => document.getElementById(id);
+
+    async function studentsApi(action, data) {
+        const res = await fetch('students_api.php?action=' + action, {
+            method: 'POST',
+            body: new URLSearchParams(data)
+        });
+        if (res.status === 401) { location.href = 'login.php'; return null; }
+        return res.json();
+    }
+
+    // Live search on the students table (ignores the Actions column)
+    $('search').addEventListener('input', function () {
         const q = this.value.toLowerCase();
         document.querySelectorAll('#studentsTable tbody tr').forEach(row => {
-            row.style.display = row.textContent.toLowerCase().includes(q) ? '' : 'none';
+            const text = Array.from(row.cells).slice(0, -1).map(c => c.textContent).join(' ').toLowerCase();
+            row.style.display = text.includes(q) ? '' : 'none';
+        });
+    });
+
+    // Edit: open the pop-up filled with the row's data
+    document.querySelectorAll('#studentsTable .edit').forEach(btn => {
+        btn.addEventListener('click', () => {
+            const row = btn.closest('tr');
+            $('editId').value = row.dataset.id;
+            $('editName').value = row.dataset.name;
+            $('editUid').value = row.dataset.uid;
+            $('editMsg').textContent = '';
+            $('editDialog').showModal();
+        });
+    });
+
+    $('editCancel').addEventListener('click', () => $('editDialog').close());
+
+    // Edit: save
+    $('editForm').addEventListener('submit', async e => {
+        e.preventDefault();
+        const r = await studentsApi('update', {
+            student_id: $('editId').value,
+            name: $('editName').value,
+            rfid_uid: $('editUid').value
+        });
+        if (!r) return;
+        if (r.success) {
+            location.reload();
+        } else {
+            $('editMsg').textContent = r.message;
+        }
+    });
+
+    // Delete (with confirmation)
+    document.querySelectorAll('#studentsTable .delete').forEach(btn => {
+        btn.addEventListener('click', async () => {
+            const row = btn.closest('tr');
+            const ok = confirm(
+                'Delete ' + row.dataset.name + ' (' + row.dataset.id + ')?\n\n' +
+                'Their login and logout history will also be deleted. This cannot be undone.'
+            );
+            if (!ok) return;
+
+            const r = await studentsApi('delete', { student_id: row.dataset.id });
+            if (!r) return;
+            if (r.success) {
+                location.reload();
+            } else {
+                alert(r.message);
+            }
         });
     });
 
     // Log out through auth_api.php
-    document.getElementById('logoutBtn').addEventListener('click', async () => {
+    $('logoutBtn').addEventListener('click', async () => {
         const res = await fetch('auth_api.php?action=logout');
         const data = await res.json();
         window.location.href = data.redirect;

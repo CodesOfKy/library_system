@@ -1,7 +1,7 @@
 <?php
 set_time_limit(0);
 
-$port = "COM10"; // change this to your arduino port
+$port = "COM6"; // change this to your arduino port
 
 exec("mode $port: BAUD=9600 PARITY=N data=8 stop=1 xon=off");
 $serial = fopen("\\\\.\\" . $port, "r");

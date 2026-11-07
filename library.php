@@ -3,29 +3,9 @@
 <head>
   <meta charset="UTF-8">
   <title>Library Login</title>
-  <style>
-    body { font-family: Arial, sans-serif; max-width: 1200px; margin: 40px auto; }
-    #card { padding: 30px; text-align: center; border-radius: 8px; background: #eee; font-size: 20px; }
-    #card.ok { background: #d4edda; }
-    #card.out { background: #cfe2ff; }
-    #card.bad { background: #f8d7da; }
-    #card h2 { margin: 0 0 10px; }
-    table { width: 100%; border-collapse: collapse; margin-top: 10px; }
-    th, td { border: 1px solid #999; padding: 8px; text-align: left; }
-
-    .tables { display: flex; gap: 20px; flex-wrap: wrap; }
-    .tables > div { flex: 1; min-width: 320px; }
-
-    #visitors { margin-bottom: 20px; }
-    #visitors h1 { margin-bottom: 5px; }
-    #rangeLabel { color: #555; margin: 0 0 10px; }
-    .filters { display: flex; gap: 8px; flex-wrap: wrap; align-items: center; }
-    .filters button { padding: 8px 14px; cursor: pointer; border: 1px solid #999; border-radius: 4px; background: #fff; }
-    .filters button.active { background: #333; color: #fff; }
-    .filters input[type="date"] { padding: 7px; }
-  </style>
+  <link rel="stylesheet" href="design.css">
 </head>
-<body>
+<body class="library">
   <h1>Library Login</h1>
 
   <div id="visitors">
@@ -60,6 +40,18 @@
         </thead>
         <tbody></tbody>
       </table>
+    </div>
+  </div>
+
+  <!-- Popup: scanned again within 3 minutes of logging in -->
+  <div id="cancelModal" class="modal" hidden>
+    <div class="modal-box">
+      <h2 id="cancelTitle"></h2>
+      <p id="cancelText"></p>
+      <div class="modal-actions">
+        <button type="button" id="btnCancelYes">Yes, cancel my log in</button>
+        <button type="button" id="btnCancelNo">No, keep me logged in</button>
+      </div>
     </div>
   </div>
 
@@ -120,12 +112,14 @@
       currentMode = "today";
       setActive("btnToday");
       loadCount();
+      loadList();
     }
 
     function showYesterday() {
       currentMode = "yesterday";
       setActive("btnYesterday");
       loadCount();
+      loadList();
     }
 
     function showSpecific() {
@@ -136,6 +130,7 @@
       document.getElementById("rangeLabel").textContent = "Showing: " + picked;
       setActive("btnFilter");
       loadCount();
+      loadList();
     }
 
     document.getElementById("btnToday").addEventListener("click", showToday);
@@ -168,14 +163,74 @@
       });
     }
 
+    // The date the page is currently showing (follows the real date for Today/Yesterday)
+    function viewDate() {
+      if (currentMode === "today") return getToday();
+      if (currentMode === "yesterday") return getYesterday();
+      return currentDate;
+    }
+
+    // true if a row's date value falls on the given YYYY-MM-DD day
+    function sameDay(value, target) {
+      const s = String(value || "");
+      if (/^\d{4}-\d{2}-\d{2}/.test(s)) return s.slice(0, 10) === target;
+      const p = new Date(s);
+      return !isNaN(p) && fmt(p) === target;
+    }
+
     async function loadList() {
       try {
-        const res = await fetch("api.php?action=list", { cache: "no-store" });
+        const day = viewDate();
+        const res = await fetch("api.php?action=list&date=" + encodeURIComponent(day), { cache: "no-store" });
         const data = await res.json();
-        fillTable("logsIn", data.in);
-        fillTable("logsOut", data.out);
+        // only keep rows from the day being shown
+        fillTable("logsIn", data.in.filter(r => sameDay(r.d, day)));
+        fillTable("logsOut", data.out.filter(r => sameDay(r.d, day)));
       } catch (e) {}
     }
+
+    // ---------- Cancel login popup ----------
+    let pendingUid = null;
+    let modalTimer = null;
+
+    function hideCancelModal() {
+      document.getElementById("cancelModal").hidden = true;
+      pendingUid = null;
+      clearTimeout(modalTimer);
+    }
+
+    function showCancelModal(data, uid) {
+      pendingUid = uid;
+      document.getElementById("cancelTitle").textContent = "Hi, " + data.name + "!";
+      document.getElementById("cancelText").textContent =
+        "You logged in " + data.seconds_ago + " seconds ago. Do you want to cancel your log in?";
+      document.getElementById("cancelModal").hidden = false;
+      clearTimeout(modalTimer);
+      modalTimer = setTimeout(hideCancelModal, 15000);   // no answer = stay logged in
+    }
+
+    async function confirmCancel() {
+      const uid = pendingUid;
+      hideCancelModal();
+      if (!uid) return;
+      try {
+        const body = new URLSearchParams({ uid: uid });
+        const r = await fetch("api.php?action=cancel_login", { method: "POST", body: body });
+        const data = await r.json();
+        if (data.cancelled) {
+          showCard("<h2>Log in cancelled</h2>" + esc(data.name) + " (" + esc(data.student_id) + ")", "out");
+          loadList();
+          loadCount();
+        } else {
+          showCard("Could not cancel. The 3 minutes may have passed.", "bad");
+        }
+      } catch (e) {
+        card.textContent = "Cannot reach api.php";
+      }
+    }
+
+    document.getElementById("btnCancelYes").addEventListener("click", confirmCancel);
+    document.getElementById("btnCancelNo").addEventListener("click", hideCancelModal);
 
     async function checkScan() {
       try {
@@ -188,11 +243,14 @@
 
         if (id > lastId) {
           lastId = id;
+          hideCancelModal();   // a new scan closes any old popup
           const body = new URLSearchParams({ uid: scan.uid });
           const r = await fetch("api.php?action=login", { method: "POST", body: body });
           const data = await r.json();
 
-          if (data.found) {
+          if (data.found && data.action === "confirm_cancel") {
+            showCancelModal(data, scan.uid);
+          } else if (data.found) {
             const isIn = data.action === "in";
             showCard(
               "<h2>" + (isIn ? "Welcome, " : "Goodbye, ") + esc(data.name) + "!</h2>" +
