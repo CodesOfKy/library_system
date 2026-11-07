@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: Nov 07, 2026 at 06:41 AM
+-- Generation Time: Nov 07, 2026 at 08:20 AM
 -- Server version: 10.4.32-MariaDB
 -- PHP Version: 8.0.30
 
@@ -20,6 +20,25 @@ SET time_zone = "+00:00";
 --
 -- Database: `arduino_db`
 --
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `admins`
+--
+
+CREATE TABLE `admins` (
+  `id` int(11) NOT NULL,
+  `email` varchar(100) NOT NULL,
+  `password` varchar(255) NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Dumping data for table `admins`
+--
+
+INSERT INTO `admins` (`id`, `email`, `password`) VALUES
+(1, 'admin@gmail.com', '$2y$10$Xb/IcQHmPC1u8/FWMBxcj.nCtOHjL1665OdmvbvbH52GA.QtlODtG');
 
 -- --------------------------------------------------------
 
@@ -48,6 +67,21 @@ INSERT INTO `books` (`id`, `title`, `author`, `genre_id`) VALUES
 (7, 'Sapiens', 'Yuval Noah Harari', 3),
 (8, 'Guns, Germs, and Steel', 'Jared Diamond', 3),
 (9, 'The Histories', 'Herodotus', 3);
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `book_loans`
+--
+
+CREATE TABLE `book_loans` (
+  `id` int(11) NOT NULL,
+  `teacher_id` int(11) NOT NULL,
+  `book_title` varchar(200) NOT NULL,
+  `borrowed_at` datetime NOT NULL DEFAULT current_timestamp(),
+  `due_date` date NOT NULL,
+  `returned_at` datetime DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 -- --------------------------------------------------------
 
@@ -224,20 +258,29 @@ CREATE TABLE `student_status` (
   `updated_at` timestamp NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp()
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
+-- --------------------------------------------------------
+
 --
--- Dumping data for table `student_status`
+-- Table structure for table `teachers`
 --
 
-INSERT INTO `student_status` (`student_id`, `status`, `updated_at`) VALUES
-('010203', 'in', '2026-11-03 02:14:50'),
-('020202', 'out', '2026-11-03 02:13:51'),
-('123456', 'in', '2026-11-03 02:14:54'),
-('202410139', 'out', '2026-11-03 02:14:37'),
-('676767', 'in', '2026-11-03 02:14:52');
+CREATE TABLE `teachers` (
+  `id` int(11) NOT NULL,
+  `name` varchar(100) NOT NULL,
+  `rfid_uid` varchar(50) NOT NULL,
+  `created_at` timestamp NOT NULL DEFAULT current_timestamp()
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
 -- Indexes for dumped tables
 --
+
+--
+-- Indexes for table `admins`
+--
+ALTER TABLE `admins`
+  ADD PRIMARY KEY (`id`),
+  ADD UNIQUE KEY `email` (`email`);
 
 --
 -- Indexes for table `books`
@@ -245,6 +288,13 @@ INSERT INTO `student_status` (`student_id`, `status`, `updated_at`) VALUES
 ALTER TABLE `books`
   ADD PRIMARY KEY (`id`),
   ADD KEY `genre_id` (`genre_id`);
+
+--
+-- Indexes for table `book_loans`
+--
+ALTER TABLE `book_loans`
+  ADD PRIMARY KEY (`id`),
+  ADD KEY `teacher_id` (`teacher_id`);
 
 --
 -- Indexes for table `genres`
@@ -287,14 +337,33 @@ ALTER TABLE `student_status`
   ADD PRIMARY KEY (`student_id`);
 
 --
+-- Indexes for table `teachers`
+--
+ALTER TABLE `teachers`
+  ADD PRIMARY KEY (`id`),
+  ADD UNIQUE KEY `rfid_uid` (`rfid_uid`);
+
+--
 -- AUTO_INCREMENT for dumped tables
 --
+
+--
+-- AUTO_INCREMENT for table `admins`
+--
+ALTER TABLE `admins`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
 
 --
 -- AUTO_INCREMENT for table `books`
 --
 ALTER TABLE `books`
   MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=10;
+
+--
+-- AUTO_INCREMENT for table `book_loans`
+--
+ALTER TABLE `book_loans`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
 
 --
 -- AUTO_INCREMENT for table `genres`
@@ -327,6 +396,12 @@ ALTER TABLE `students`
   MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=27;
 
 --
+-- AUTO_INCREMENT for table `teachers`
+--
+ALTER TABLE `teachers`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
+
+--
 -- Constraints for dumped tables
 --
 
@@ -335,6 +410,12 @@ ALTER TABLE `students`
 --
 ALTER TABLE `books`
   ADD CONSTRAINT `books_ibfk_1` FOREIGN KEY (`genre_id`) REFERENCES `genres` (`id`);
+
+--
+-- Constraints for table `book_loans`
+--
+ALTER TABLE `book_loans`
+  ADD CONSTRAINT `book_loans_ibfk_1` FOREIGN KEY (`teacher_id`) REFERENCES `teachers` (`id`) ON DELETE CASCADE;
 COMMIT;
 
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
