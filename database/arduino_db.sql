@@ -3,9 +3,9 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: Nov 07, 2026 at 08:20 AM
+-- Generation Time: Nov 07, 2026 at 09:35 AM
 -- Server version: 10.4.32-MariaDB
--- PHP Version: 8.0.30
+-- PHP Version: 8.2.12
 
 SET SQL_MODE = "NO_AUTO_VALUE_ON_ZERO";
 START TRANSACTION;
@@ -83,6 +83,28 @@ CREATE TABLE `book_loans` (
   `returned_at` datetime DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
+--
+-- Dumping data for table `book_loans`
+--
+
+INSERT INTO `book_loans` (`id`, `teacher_id`, `book_title`, `borrowed_at`, `due_date`, `returned_at`) VALUES
+(1, 1, 'Jose Rizal Works', '2026-11-07 15:34:58', '2026-11-14', '2026-11-07 15:35:01'),
+(2, 1, 'Jose Rizal Works', '2026-11-07 15:38:32', '2026-11-14', '2026-11-07 15:38:35'),
+(3, 1, 'Jose Rizal Works', '2026-11-07 15:40:49', '2026-11-14', '2026-11-07 15:40:52'),
+(4, 1, 'Jose', '2026-11-07 15:48:29', '2026-11-14', '2026-11-07 15:48:32'),
+(5, 1, 'Jose Rizal Works', '2026-11-07 15:54:36', '2026-11-14', '2026-11-07 15:54:40'),
+(6, 1, 'Jose Rizal Works', '2026-11-07 15:59:02', '2026-11-14', '2026-11-07 15:59:07'),
+(7, 1, 'Jose Rizal Works', '2026-11-07 16:02:07', '2026-11-14', '2026-11-07 16:05:54'),
+(8, 1, 'Hatdog', '2026-11-07 16:02:20', '2026-11-14', '2026-11-07 16:03:03'),
+(9, 1, 'Footlong', '2026-11-07 16:02:32', '2026-11-14', '2026-11-07 16:05:54'),
+(10, 1, 'Poo', '2026-11-07 16:02:58', '2026-11-14', '2026-11-07 16:05:54'),
+(11, 1, 'adasdad', '2026-11-07 16:05:46', '2026-11-14', '2026-11-07 16:05:54'),
+(12, 1, 'asdadasdadad', '2026-11-07 16:05:46', '2026-11-14', '2026-11-07 16:05:54'),
+(13, 1, 'asdadasdadadadasd', '2026-11-07 16:05:46', '2026-11-14', '2026-11-07 16:10:06'),
+(14, 1, 'wefwerefsdf', '2026-11-07 16:09:58', '2026-11-09', '2026-11-07 16:10:06'),
+(15, 1, 'sfsdfsfsfewrwr', '2026-11-07 16:09:58', '2026-11-09', '2026-11-07 16:10:06'),
+(16, 1, 'wewerwerfsdfsdfwerwfe', '2026-11-07 16:09:58', '2026-11-09', '2026-11-07 16:10:06');
+
 -- --------------------------------------------------------
 
 --
@@ -121,39 +143,16 @@ CREATE TABLE `library_in` (
 --
 
 INSERT INTO `library_in` (`id`, `student_id`, `login_time`) VALUES
-(94, '676767', '2026-10-25 09:00:12'),
-(95, '676767', '2026-10-25 09:00:14'),
-(96, '676767', '2026-10-25 09:00:18'),
-(97, '676767', '2026-10-25 09:00:21'),
-(98, '676767', '2026-10-25 09:00:38'),
-(99, '676767', '2026-10-25 09:00:42'),
-(100, '676767', '2026-10-25 09:02:49'),
-(101, '676767', '2026-10-25 09:02:58'),
-(102, '676767', '2026-10-25 09:03:03'),
-(103, '676767', '2026-10-25 09:03:08'),
-(104, '676767', '2026-10-25 09:03:14'),
-(105, '676767', '2026-10-25 09:03:19'),
-(106, '676767', '2026-10-25 09:03:24'),
-(107, '676767', '2026-10-25 09:03:29'),
-(108, '676767', '2026-10-25 09:03:58'),
 (109, '123456', '2026-10-25 09:04:28'),
 (110, '123456', '2026-10-25 09:04:36'),
 (111, '123456', '2026-10-25 09:05:34'),
 (112, '123456', '2026-10-25 09:05:37'),
 (113, '123456', '2026-10-25 09:05:44'),
 (114, '123456', '2026-10-25 09:05:57'),
-(115, '676767', '2026-10-25 09:06:08'),
 (116, '123456', '2026-10-25 09:06:26'),
-(117, '010203', '2026-10-25 09:07:01'),
-(118, '020202', '2026-10-25 09:09:30'),
-(119, '020202', '2026-11-03 02:07:02'),
-(120, '020202', '2026-11-03 02:07:16'),
-(121, '020202', '2026-11-03 02:08:11'),
-(122, '020202', '2026-11-03 02:13:45'),
 (123, '202410139', '2026-11-03 02:14:33'),
-(124, '010203', '2026-11-03 02:14:50'),
-(125, '676767', '2026-11-03 02:14:52'),
-(126, '123456', '2026-11-03 02:14:54');
+(126, '123456', '2026-11-03 02:14:54'),
+(127, '123465', '2026-11-07 08:17:51');
 
 -- --------------------------------------------------------
 
@@ -172,34 +171,12 @@ CREATE TABLE `library_out` (
 --
 
 INSERT INTO `library_out` (`id`, `student_id`, `logout_time`) VALUES
-(23, '676767', '2026-10-25 09:00:13'),
-(24, '676767', '2026-10-25 09:00:16'),
-(25, '676767', '2026-10-25 09:00:19'),
-(26, '676767', '2026-10-25 09:00:23'),
-(27, '676767', '2026-10-25 09:00:40'),
-(28, '676767', '2026-10-25 09:02:46'),
-(29, '676767', '2026-10-25 09:02:55'),
-(30, '676767', '2026-10-25 09:03:00'),
-(31, '676767', '2026-10-25 09:03:06'),
-(32, '676767', '2026-10-25 09:03:12'),
-(33, '676767', '2026-10-25 09:03:15'),
-(34, '676767', '2026-10-25 09:03:22'),
-(35, '676767', '2026-10-25 09:03:27'),
-(36, '676767', '2026-10-25 09:03:30'),
-(37, '676767', '2026-10-25 09:03:59'),
 (38, '123456', '2026-10-25 09:04:32'),
 (39, '123456', '2026-10-25 09:04:43'),
 (40, '123456', '2026-10-25 09:05:36'),
 (41, '123456', '2026-10-25 09:05:39'),
 (42, '123456', '2026-10-25 09:05:45'),
 (43, '123456', '2026-10-25 09:05:58'),
-(44, '676767', '2026-10-25 09:06:09'),
-(45, '010203', '2026-10-25 09:07:10'),
-(46, '020202', '2026-10-25 09:09:35'),
-(47, '020202', '2026-11-03 02:07:06'),
-(48, '020202', '2026-11-03 02:08:09'),
-(49, '020202', '2026-11-03 02:08:13'),
-(50, '020202', '2026-11-03 02:13:51'),
 (51, '202410139', '2026-11-03 02:14:37');
 
 -- --------------------------------------------------------
@@ -219,7 +196,7 @@ CREATE TABLE `rfid_logs` (
 --
 
 INSERT INTO `rfid_logs` (`id`, `uid`, `scanned_at`) VALUES
-(223, '25351106', '2026-11-03 02:14:57');
+(267, '79CCD106', '2026-11-07 08:17:53');
 
 -- --------------------------------------------------------
 
@@ -230,6 +207,9 @@ INSERT INTO `rfid_logs` (`id`, `uid`, `scanned_at`) VALUES
 CREATE TABLE `students` (
   `id` int(11) NOT NULL,
   `student_id` varchar(20) NOT NULL,
+  `first_name` varchar(50) NOT NULL DEFAULT '',
+  `middle_name` varchar(50) NOT NULL DEFAULT '',
+  `last_name` varchar(50) NOT NULL DEFAULT '',
   `name` varchar(100) NOT NULL,
   `rfid_uid` varchar(20) NOT NULL,
   `registered_at` timestamp NOT NULL DEFAULT current_timestamp()
@@ -239,12 +219,10 @@ CREATE TABLE `students` (
 -- Dumping data for table `students`
 --
 
-INSERT INTO `students` (`id`, `student_id`, `name`, `rfid_uid`, `registered_at`) VALUES
-(22, '676767', 'HATDOG FOOTLONG', '1572D406', '2026-10-25 08:53:45'),
-(23, '123456', 'SPONGEBOB SQUAREPANTS', 'CDB52F8E', '2026-10-25 09:04:24'),
-(24, '010203', 'ELIZABETH A. FRANCISCO', '79CCD106', '2026-10-25 09:06:54'),
-(25, '020202', 'Dutch', '2ADBF855', '2026-10-25 09:09:23'),
-(26, '202410139', 'FRANCISCO, NICOLE KYLIE A.', 'B4321106', '2026-11-03 02:14:26');
+INSERT INTO `students` (`id`, `student_id`, `first_name`, `middle_name`, `last_name`, `name`, `rfid_uid`, `registered_at`) VALUES
+(23, '123456', 'SPONGEBOB', '', 'SQUAREPANTS', 'SPONGEBOB SQUAREPANTS', 'CDB52F8E', '2026-10-25 09:04:24'),
+(26, '202410139', 'NICOLE KYLIE', 'A.', 'FRANCISCO', 'NICOLE KYLIE A. FRANCISCO', 'B4321106', '2026-11-03 02:14:26'),
+(27, '123465', 'Nebula', 'Sirius', 'Cosmic', 'Nebula Sirius Cosmic', '79CCD106', '2026-11-07 08:17:46');
 
 -- --------------------------------------------------------
 
@@ -258,6 +236,13 @@ CREATE TABLE `student_status` (
   `updated_at` timestamp NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp()
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
+--
+-- Dumping data for table `student_status`
+--
+
+INSERT INTO `student_status` (`student_id`, `status`, `updated_at`) VALUES
+('123465', 'in', '2026-11-07 08:17:51');
+
 -- --------------------------------------------------------
 
 --
@@ -270,6 +255,13 @@ CREATE TABLE `teachers` (
   `rfid_uid` varchar(50) NOT NULL,
   `created_at` timestamp NOT NULL DEFAULT current_timestamp()
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Dumping data for table `teachers`
+--
+
+INSERT INTO `teachers` (`id`, `name`, `rfid_uid`, `created_at`) VALUES
+(1, 'Chuhay Quilao', '25351106', '2026-11-07 07:34:58');
 
 --
 -- Indexes for dumped tables
@@ -328,7 +320,8 @@ ALTER TABLE `rfid_logs`
 ALTER TABLE `students`
   ADD PRIMARY KEY (`id`),
   ADD UNIQUE KEY `student_id` (`student_id`),
-  ADD UNIQUE KEY `rfid_uid` (`rfid_uid`);
+  ADD UNIQUE KEY `rfid_uid` (`rfid_uid`),
+  ADD UNIQUE KEY `full_name` (`first_name`,`last_name`);
 
 --
 -- Indexes for table `student_status`
@@ -363,7 +356,7 @@ ALTER TABLE `books`
 -- AUTO_INCREMENT for table `book_loans`
 --
 ALTER TABLE `book_loans`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=17;
 
 --
 -- AUTO_INCREMENT for table `genres`
@@ -375,7 +368,7 @@ ALTER TABLE `genres`
 -- AUTO_INCREMENT for table `library_in`
 --
 ALTER TABLE `library_in`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=127;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=128;
 
 --
 -- AUTO_INCREMENT for table `library_out`
@@ -387,19 +380,19 @@ ALTER TABLE `library_out`
 -- AUTO_INCREMENT for table `rfid_logs`
 --
 ALTER TABLE `rfid_logs`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=224;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=268;
 
 --
 -- AUTO_INCREMENT for table `students`
 --
 ALTER TABLE `students`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=27;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=28;
 
 --
 -- AUTO_INCREMENT for table `teachers`
 --
 ALTER TABLE `teachers`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
 
 --
 -- Constraints for dumped tables
