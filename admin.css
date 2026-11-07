@@ -102,3 +102,57 @@ tbody tr:hover { background: #fafafa; }
 }
 .filters a:hover { border-color: #222; }
 .filters a.active { background: #222; border-color: #222; color: #fff; }
+
+/* Borrow & Return */
+.btn-link {
+    display: inline-block;
+    padding: 7px 14px;
+    border: 1px solid #222;
+    border-radius: 4px;
+    font-size: 13px;
+    color: #222;
+    text-decoration: none;
+    background: #fff;
+    margin-right: 8px;
+}
+.btn-link:hover { background: #222; color: #fff; }
+
+.hidden { display: none !important; }
+
+.status {
+    padding: 12px 14px;
+    border: 1px dashed #ccc;
+    border-radius: 4px;
+    color: #666;
+    font-size: 14px;
+    margin: 0 0 14px;
+}
+.status.ok    { border: 1px solid #15803d; color: #15803d; }
+.status.error { border: 1px solid #b91c1c; color: #b91c1c; }
+
+#borrowForm { display: grid; gap: 6px; max-width: 380px; }
+#borrowForm label {
+    font-size: 12px;
+    text-transform: uppercase;
+    letter-spacing: .5px;
+    color: #777;
+    margin-top: 6px;
+}
+#borrowForm input {
+    padding: 8px 10px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    font-size: 14px;
+    width: 100%;
+}
+#borrowForm input:focus { outline: none; border-color: #222; }
+#borrowForm input[readonly] { background: #fafafa; color: #777; }
+#borrowForm p { margin: 6px 0 0; font-size: 14px; }
+.form-actions { display: flex; gap: 8px; margin-top: 10px; }
+
+button.ghost { background: #fff; color: #222; }
+button.ghost:hover { background: #222; color: #fff; }
+
+.badge.borrowed { color: #b45309; border-color: #b45309; }
+.badge.overdue  { color: #b91c1c; border-color: #b91c1c; }
+.badge.returned { color: #777;    border-color: #bbb; }
