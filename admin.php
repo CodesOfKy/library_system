@@ -71,7 +71,6 @@ $recent = $conn->query("
     <header>
         <h2>Library Admin Dashboard</h2>
         <div>
-            <a href="borrow.php" class="btn-link">Borrow &amp; Return</a>
             <span><?= htmlspecialchars($_SESSION['admin_email']) ?></span>
             <button id="logoutBtn">Log Out</button>
         </div>
