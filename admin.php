@@ -11,15 +11,69 @@ if ($conn->connect_error) {
     die("Database connection failed");
 }
 
+// ---- Add / delete filter options ----
+if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+    if (isset($_POST['add_option'])) {
+        $name = trim($_POST['name'] ?? '');
+        if ($name !== '' && in_array($_POST['kind'], ['grade', 'course']) && in_array($_POST['level'], ['SHS', 'College'])) {
+            $stmt = $conn->prepare("INSERT IGNORE INTO options (kind, level, name) VALUES (?, ?, ?)");
+            $stmt->bind_param("sss", $_POST['kind'], $_POST['level'], $name);
+            $stmt->execute();
+        }
+    } elseif (isset($_POST['delete_option'])) {
+        $stmt = $conn->prepare("DELETE FROM options WHERE id = ?");
+        $stmt->bind_param("i", $_POST['id']);
+        $stmt->execute();
+    }
+    header("Location: " . $_SERVER['PHP_SELF']);
+    exit();
+}
+
 // ---- Summary numbers ----
 $totalStudents = (int)$conn->query("SELECT COUNT(*) AS c FROM students")->fetch_assoc()['c'];
 $insideNow     = (int)$conn->query("SELECT COUNT(*) AS c FROM student_status WHERE status = 'in'")->fetch_assoc()['c'];
 $visitsToday   = (int)$conn->query("SELECT COUNT(*) AS c FROM library_in WHERE DATE(login_time) = CURDATE()")->fetch_assoc()['c'];
 $logoutsToday  = (int)$conn->query("SELECT COUNT(*) AS c FROM library_out WHERE DATE(logout_time) = CURDATE()")->fetch_assoc()['c'];
 
+// ---- Filter options (used by the graph filters and the Manage Filters panel) ----
+$options = $conn->query("SELECT * FROM options ORDER BY kind DESC, level DESC, id")->fetch_all(MYSQLI_ASSOC);
+$names = ['grade' => [], 'course' => []];
+foreach ($options as $o) {
+    $names[$o['kind']][] = $o['name'];
+}
+
+// ---- Graph: visits per day (last 14 days), filtered by grade / course ----
+$fGrade  = $_GET['grade']  ?? '';
+$fCourse = $_GET['course'] ?? '';
+
+$sql = "SELECT DATE(l.login_time) AS d, COUNT(*) AS c
+        FROM library_in l JOIN students s ON s.student_id = l.student_id
+        WHERE l.login_time >= CURDATE() - INTERVAL 13 DAY";
+$types = '';
+$params = [];
+foreach (['grade' => $fGrade, 'course' => $fCourse] as $column => $value) {
+    if ($value !== '') {
+        $sql .= " AND s.$column = ?";
+        $types .= 's';
+        $params[] = $value;
+    }
+}
+$stmt = $conn->prepare($sql . " GROUP BY d");
+if ($params) $stmt->bind_param($types, ...$params);
+$stmt->execute();
+$counts = array_column($stmt->get_result()->fetch_all(MYSQLI_ASSOC), 'c', 'd');
+
+$labels = $data = [];
+for ($i = 13; $i >= 0; $i--) {
+    $day = date('Y-m-d', strtotime("-$i day"));
+    $labels[] = date('M d', strtotime($day));
+    $data[]   = (int)($counts[$day] ?? 0);
+}
+
 // ---- Students table (status, last login, total visits) ----
 $students = $conn->query("
     SELECT s.student_id, s.name, s.first_name, s.middle_name, s.last_name, s.rfid_uid,
+           s.grade, s.course, s.section,
            COALESCE(st.status, 'out') AS status,
            (SELECT DATE_FORMAT(MAX(login_time), '%b %d, %Y %h:%i %p')
               FROM library_in WHERE student_id = s.student_id) AS last_login,
@@ -72,6 +126,7 @@ $recent = $conn->query("
         <h2>Library Admin Dashboard</h2>
         <div>
             <span><?= htmlspecialchars($_SESSION['admin_email']) ?></span>
+            <button id="pdfBtn">Download PDF</button>
             <button id="logoutBtn">Log Out</button>
         </div>
     </header>
@@ -85,16 +140,34 @@ $recent = $conn->query("
             <div class="card"><p>Logouts Today</p><h1><?= $logoutsToday ?></h1></div>
         </div>
 
+        <!-- Graph -->
+        <div class="panel">
+            <h3>Library Visits (Last 14 Days)</h3>
+            <form method="GET" class="filters">
+                <input type="hidden" name="range" value="<?= $range ?>">
+                <?php foreach (['grade' => [$fGrade, 'All Grades'], 'course' => [$fCourse, 'All Courses']] as $key => [$current, $allLabel]): ?>
+                    <select name="<?= $key ?>" onchange="this.form.submit()">
+                        <option value=""><?= $allLabel ?></option>
+                        <?php foreach (array_unique($names[$key]) as $n): ?>
+                            <option <?= $n === $current ? 'selected' : '' ?>><?= htmlspecialchars($n) ?></option>
+                        <?php endforeach; ?>
+                    </select>
+                <?php endforeach; ?>
+            </form>
+            <canvas id="visitsChart" height="90"></canvas>
+        </div>
+
         <!-- Students table -->
         <div class="panel">
             <h3>Students</h3>
-            <input type="text" id="search" placeholder="Search name, ID, or RFID...">
+            <input type="text" id="search" placeholder="Search name, ID, class, or RFID...">
             <div class="scroll">
                 <table id="studentsTable">
                     <thead>
                         <tr>
                             <th>Student ID</th>
                             <th>Name</th>
+                            <th>Class</th>
                             <th>RFID UID</th>
                             <th>Status</th>
                             <th>Last Login</th>
@@ -104,7 +177,7 @@ $recent = $conn->query("
                     </thead>
                     <tbody>
                     <?php if (!$students): ?>
-                        <tr><td colspan="7">No students found.</td></tr>
+                        <tr><td colspan="8">No students found.</td></tr>
                     <?php endif; ?>
                     <?php foreach ($students as $s): ?>
                         <tr data-id="<?= htmlspecialchars($s['student_id']) ?>"
@@ -115,6 +188,7 @@ $recent = $conn->query("
                             data-uid="<?= htmlspecialchars($s['rfid_uid']) ?>">
                             <td><?= htmlspecialchars($s['student_id']) ?></td>
                             <td><?= htmlspecialchars($s['name']) ?></td>
+                            <td><?= htmlspecialchars(implode(' - ', array_filter([$s['grade'], $s['course'], $s['section']])) ?: '—') ?></td>
                             <td><?= htmlspecialchars($s['rfid_uid']) ?></td>
                             <td>
                                 <span class="badge <?= $s['status'] === 'in' ? 'in' : 'out' ?>">
@@ -146,7 +220,7 @@ $recent = $conn->query("
             </div>
 
             <div class="scroll">
-                <table>
+                <table id="activityTable">
                     <thead>
                         <tr><th>Name</th><th>Student ID</th><th>Action</th><th>Date &amp; Time</th></tr>
                     </thead>
@@ -164,6 +238,45 @@ $recent = $conn->query("
                                 </span>
                             </td>
                             <td><?= htmlspecialchars($r['time_text']) ?></td>
+                        </tr>
+                    <?php endforeach; ?>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- Manage filters (these also feed the register dropdowns) -->
+        <div class="panel">
+            <h3>Manage Filters</h3>
+
+            <form method="POST" class="filters">
+                <select name="kind">
+                    <option value="grade">Grade / Year</option>
+                    <option value="course">Course</option>
+                </select>
+                <select name="level">
+                    <option>SHS</option>
+                    <option>College</option>
+                </select>
+                <input type="text" name="name" maxlength="30" placeholder="e.g. ABM or Grade 10" required>
+                <button type="submit" name="add_option">Add</button>
+            </form>
+
+            <div class="scroll">
+                <table>
+                    <thead><tr><th>Type</th><th>Level</th><th>Name</th><th></th></tr></thead>
+                    <tbody>
+                    <?php foreach ($options as $o): ?>
+                        <tr>
+                            <td><?= $o['kind'] === 'grade' ? 'Grade / Year' : 'Course' ?></td>
+                            <td><?= $o['level'] ?></td>
+                            <td><?= htmlspecialchars($o['name']) ?></td>
+                            <td>
+                                <form method="POST" onsubmit="return confirm('Delete this filter?')">
+                                    <input type="hidden" name="id" value="<?= $o['id'] ?>">
+                                    <button type="submit" name="delete_option" class="delete">Delete</button>
+                                </form>
+                            </td>
                         </tr>
                     <?php endforeach; ?>
                     </tbody>
@@ -200,8 +313,64 @@ $recent = $conn->query("
         </form>
     </dialog>
 
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.8.2/jspdf.plugin.autotable.min.js"></script>
     <script>
     const $ = id => document.getElementById(id);
+
+    // ---- Graph ----
+    const chart = new Chart($('visitsChart'), {
+        type: 'bar',
+        data: {
+            labels: <?= json_encode($labels) ?>,
+            datasets: [{ label: 'Visits', data: <?= json_encode($data) ?> }]
+        },
+        options: { animation: false, scales: { y: { beginAtZero: true, ticks: { precision: 0 } } } }
+    });
+
+    // ---- PDF report (summary, graph, students, recent activity) ----
+    $('pdfBtn').addEventListener('click', () => {
+        const doc = new window.jspdf.jsPDF();
+        const filters = <?= json_encode('Grade: ' . ($fGrade ?: 'All') . ' | Course: ' . ($fCourse ?: 'All')) ?>;
+
+        doc.setFontSize(16);
+        doc.text('Library Report', 14, 15);
+        doc.setFontSize(10);
+        doc.text('Generated: ' + new Date().toLocaleString(), 14, 21);
+
+        // Summary
+        doc.autoTable({
+            startY: 26,
+            head: [['Total Students', 'Currently Inside', 'Visitors Today', 'Logouts Today']],
+            body: [[<?= "$totalStudents, $insideNow, $visitsToday, $logoutsToday" ?>]]
+        });
+
+        // Graph
+        let y = doc.lastAutoTable.finalY + 8;
+        doc.text('Visits, last 14 days (' + filters + ')', 14, y);
+        const w = 180, h = w * chart.height / chart.width;
+        doc.addImage(chart.toBase64Image(), 'PNG', 14, y + 3, w, h);
+
+        // Students (respects the search box)
+        y += h + 14;
+        doc.text('Students', 14, y);
+        doc.autoTable({
+            startY: y + 3,
+            head: [[...document.querySelectorAll('#studentsTable thead th')].slice(0, -1).map(th => th.textContent)],
+            body: [...document.querySelectorAll('#studentsTable tbody tr')]
+                .filter(r => r.style.display !== 'none')
+                .map(r => [...r.cells].slice(0, -1).map(c => c.textContent.trim())),
+            styles: { fontSize: 8 }
+        });
+
+        // Recent activity (respects the Today / Week / Month / All filter)
+        y = doc.lastAutoTable.finalY + 10;
+        doc.text('Recent Activity (<?= $range ?>)', 14, y);
+        doc.autoTable({ startY: y + 3, html: '#activityTable', styles: { fontSize: 8 } });
+
+        doc.save('library-report.pdf');
+    });
 
     async function studentsApi(action, data) {
         try {
