@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: Nov 07, 2026 at 09:35 AM
+-- Generation Time: Nov 14, 2026 at 07:37 AM
 -- Server version: 10.4.32-MariaDB
 -- PHP Version: 8.2.12
 
@@ -182,6 +182,35 @@ INSERT INTO `library_out` (`id`, `student_id`, `logout_time`) VALUES
 -- --------------------------------------------------------
 
 --
+-- Table structure for table `options`
+--
+
+CREATE TABLE `options` (
+  `id` int(11) NOT NULL,
+  `kind` enum('grade','course') NOT NULL,
+  `level` enum('SHS','College') NOT NULL,
+  `name` varchar(30) NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Dumping data for table `options`
+--
+
+INSERT INTO `options` (`id`, `kind`, `level`, `name`) VALUES
+(1, 'grade', 'SHS', 'Grade 11'),
+(2, 'grade', 'SHS', 'Grade 12'),
+(3, 'grade', 'College', '1st Year'),
+(4, 'grade', 'College', '2nd Year'),
+(5, 'grade', 'College', '3rd Year'),
+(6, 'grade', 'College', '4th Year'),
+(7, 'course', 'SHS', 'GAS'),
+(9, 'course', 'SHS', 'HUMSS'),
+(8, 'course', 'SHS', 'ICT'),
+(10, 'course', 'College', 'Entrep');
+
+-- --------------------------------------------------------
+
+--
 -- Table structure for table `rfid_logs`
 --
 
@@ -212,17 +241,21 @@ CREATE TABLE `students` (
   `last_name` varchar(50) NOT NULL DEFAULT '',
   `name` varchar(100) NOT NULL,
   `rfid_uid` varchar(20) NOT NULL,
-  `registered_at` timestamp NOT NULL DEFAULT current_timestamp()
+  `registered_at` timestamp NOT NULL DEFAULT current_timestamp(),
+  `level` varchar(10) NOT NULL DEFAULT 'SHS',
+  `grade` varchar(20) DEFAULT NULL,
+  `course` varchar(30) DEFAULT NULL,
+  `section` varchar(10) DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
 -- Dumping data for table `students`
 --
 
-INSERT INTO `students` (`id`, `student_id`, `first_name`, `middle_name`, `last_name`, `name`, `rfid_uid`, `registered_at`) VALUES
-(23, '123456', 'SPONGEBOB', '', 'SQUAREPANTS', 'SPONGEBOB SQUAREPANTS', 'CDB52F8E', '2026-10-25 09:04:24'),
-(26, '202410139', 'NICOLE KYLIE', 'A.', 'FRANCISCO', 'NICOLE KYLIE A. FRANCISCO', 'B4321106', '2026-11-03 02:14:26'),
-(27, '123465', 'Nebula', 'Sirius', 'Cosmic', 'Nebula Sirius Cosmic', '79CCD106', '2026-11-07 08:17:46');
+INSERT INTO `students` (`id`, `student_id`, `first_name`, `middle_name`, `last_name`, `name`, `rfid_uid`, `registered_at`, `level`, `grade`, `course`, `section`) VALUES
+(23, '123456', 'SPONGEBOB', '', 'SQUAREPANTS', 'SPONGEBOB SQUAREPANTS', 'CDB52F8E', '2026-10-25 09:04:24', 'SHS', NULL, NULL, NULL),
+(26, '202410139', 'NICOLE KYLIE', 'A.', 'FRANCISCO', 'NICOLE KYLIE A. FRANCISCO', 'B4321106', '2026-11-03 02:14:26', 'SHS', NULL, NULL, NULL),
+(27, '123465', 'Nebula', 'Sirius', 'Cosmic', 'Nebula Sirius Cosmic', '79CCD106', '2026-11-07 08:17:46', 'SHS', NULL, NULL, NULL);
 
 -- --------------------------------------------------------
 
@@ -235,13 +268,6 @@ CREATE TABLE `student_status` (
   `status` enum('in','out') NOT NULL DEFAULT 'out',
   `updated_at` timestamp NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp()
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
-
---
--- Dumping data for table `student_status`
---
-
-INSERT INTO `student_status` (`student_id`, `status`, `updated_at`) VALUES
-('123465', 'in', '2026-11-07 08:17:51');
 
 -- --------------------------------------------------------
 
@@ -307,6 +333,13 @@ ALTER TABLE `library_in`
 --
 ALTER TABLE `library_out`
   ADD PRIMARY KEY (`id`);
+
+--
+-- Indexes for table `options`
+--
+ALTER TABLE `options`
+  ADD PRIMARY KEY (`id`),
+  ADD UNIQUE KEY `kind` (`kind`,`level`,`name`);
 
 --
 -- Indexes for table `rfid_logs`
@@ -375,6 +408,12 @@ ALTER TABLE `library_in`
 --
 ALTER TABLE `library_out`
   MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=52;
+
+--
+-- AUTO_INCREMENT for table `options`
+--
+ALTER TABLE `options`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=11;
 
 --
 -- AUTO_INCREMENT for table `rfid_logs`
