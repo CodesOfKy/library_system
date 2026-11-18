@@ -6,7 +6,7 @@ $errors = [];
 $success = "";
 
 // Values kept in the form after an error
-$first = $middle = $last = $student_id = "";
+$first = $middle = $last = $student_id = $level = $grade = $course = $section = "";
 
 // True if the query finds at least one row
 function exists($conn, $sql, $types, ...$params) {
@@ -30,10 +30,15 @@ if ($conn->connect_error) {
     $last       = clean($_POST['last_name'] ?? '');
     $student_id = trim($_POST['student_id'] ?? '');
     $uid        = trim($_POST['rfid_uid'] ?? '');
+    $level      = $_POST['level'] ?? '';
+    $grade      = $_POST['grade'] ?? '';
+    $course     = $_POST['course'] ?? '';
+    $section    = clean($_POST['section'] ?? '');
 
     // 1. Check the form itself
-    if ($first === '' || $last === '' || $student_id === '' || $uid === '') {
-        $errors[] = "Please fill in your first name, last name, student number, and tap your card.";
+    if ($first === '' || $last === '' || $student_id === '' || $uid === '' ||
+        $level === '' || $grade === '' || $course === '' || $section === '') {
+        $errors[] = "Please fill in all fields and tap your card.";
     }
 
     foreach (["First name" => $first, "Middle name" => $middle, "Last name" => $last] as $label => $value) {
@@ -46,6 +51,17 @@ if ($conn->connect_error) {
 
     if ($student_id !== '' && !preg_match('/^[A-Za-z0-9-]{1,20}$/', $student_id)) {
         $errors[] = "Student number can only have letters, numbers and dashes (20 characters max).";
+    }
+
+    if ($section !== '' && !preg_match('/^[A-Za-z0-9 -]{1,10}$/', $section)) {
+        $errors[] = "Section can only have letters, numbers, spaces and dashes (10 characters max).";
+    }
+
+    // Grade and course must exist in the options table for the chosen level
+    foreach (['grade' => $grade, 'course' => $course] as $kind => $value) {
+        if ($value !== '' && !exists($conn, "SELECT id FROM options WHERE kind = ? AND level = ? AND name = ?", "sss", $kind, $level, $value)) {
+            $errors[] = "Please choose a valid $kind for $level.";
+        }
     }
 
     if (strlen($uid) > 20) {
@@ -69,16 +85,16 @@ if ($conn->connect_error) {
     if (!$errors) {
         $full = implode(' ', array_filter([$first, $middle, $last]));   // the "name" column
 
-        $stmt = $conn->prepare("INSERT INTO students (student_id, first_name, middle_name, last_name, name, rfid_uid)
-                                VALUES (?, ?, ?, ?, ?, ?)");
+        $stmt = $conn->prepare("INSERT INTO students (student_id, first_name, middle_name, last_name, name, rfid_uid, level, grade, course, section)
+                                VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
         if (!$stmt) {
             $errors[] = "Something went wrong: " . $conn->error;
         } else {
-            $stmt->bind_param("ssssss", $student_id, $first, $middle, $last, $full, $uid);
+            $stmt->bind_param("ssssssssss", $student_id, $first, $middle, $last, $full, $uid, $level, $grade, $course, $section);
 
             if ($stmt->execute()) {
                 $success = "Registered successfully, " . $full . "!";
-                $first = $middle = $last = $student_id = "";   // clear the form
+                $first = $middle = $last = $student_id = $level = $grade = $course = $section = "";   // clear the form
             } elseif ($stmt->errno == 1062) {
                 $errors[] = "This student, student number, or RFID card is already registered.";
             } else {
@@ -87,6 +103,9 @@ if ($conn->connect_error) {
         }
     }
 }
+
+// Dropdown choices (edited from the dashboard)
+$opts = $conn->connect_error ? [] : $conn->query("SELECT kind, level, name FROM options ORDER BY id")->fetch_all(MYSQLI_ASSOC);
 ?>
 <!DOCTYPE html>
 <html>
@@ -108,16 +127,29 @@ if ($conn->connect_error) {
 
   <form method="POST">
     <label>First Name</label>
-    <input type="text" name="first_name" minLength = "2" maxlength="30" value="<?= htmlspecialchars($first) ?>" required>
+    <input type="text" name="first_name" minlength="2" maxlength="30" value="<?= htmlspecialchars($first) ?>" required>
 
     <label>Middle Name</label>
-    <input type="text" name="middle_name" minLength = "4" maxlength="30" value="<?= htmlspecialchars($middle) ?> " required>
+    <input type="text" name="middle_name" maxlength="30" value="<?= htmlspecialchars($middle) ?>">
 
     <label>Last Name</label>
-    <input type="text" name="last_name" minLength = "4" maxlength="30" value="<?= htmlspecialchars($last) ?>" required>
+    <input type="text" name="last_name" minlength="2" maxlength="30" value="<?= htmlspecialchars($last) ?>" required>
 
     <label>Student Number</label>
     <input type="text" name="student_id" maxlength="20" value="<?= htmlspecialchars($student_id) ?>" required>
+
+    <label>School Level</label>
+    <label><input type="radio" name="level" value="SHS"     <?= $level === 'SHS'     ? 'checked' : '' ?> required> SHS</label>
+    <label><input type="radio" name="level" value="College" <?= $level === 'College' ? 'checked' : '' ?>> College</label>
+
+    <label>Grade / Year</label>
+    <select name="grade" id="grade" required></select>
+
+    <label>Course</label>
+    <select name="course" id="course" required></select>
+
+    <label>Section</label>
+    <input type="text" name="section" maxlength="10" value="<?= htmlspecialchars($section) ?>" required>
 
     <label>RFID Card</label>
     <input type="hidden" name="rfid_uid" id="uid_real">
@@ -125,15 +157,30 @@ if ($conn->connect_error) {
     <p id="status">Waiting for card...</p>
 
     <button type="submit">Submit</button>
-
-
-
-
   </form>
-      <br><br><br><br>
-      <a href='library.php'><button>GO TO LIBRARY</button></a>;
+  <br><br><br><br>
+  <a href="library.php"><button>GO TO LIBRARY</button></a>
 
   <script>
+    // ---- Grade / course dropdowns follow the SHS / College choice ----
+    const OPTIONS = <?= json_encode($opts) ?>;
+    const chosen  = { grade: <?= json_encode($grade) ?>, course: <?= json_encode($course) ?> };
+
+    function fillDropdowns() {
+      const level = document.querySelector('input[name=level]:checked')?.value;
+      for (const kind of ['grade', 'course']) {
+        document.getElementById(kind).replaceChildren(
+          new Option('Select...', ''),
+          ...OPTIONS.filter(o => o.kind === kind && o.level === level)
+                    .map(o => new Option(o.name, o.name, false, o.name === chosen[kind]))
+        );
+      }
+    }
+    document.querySelectorAll('input[name=level]').forEach(r =>
+      r.addEventListener('change', () => { chosen.grade = chosen.course = ''; fillDropdowns(); }));
+    fillDropdowns();
+
+    // ---- RFID scan ----
     let lastId = null;
 
     async function checkScan() {
