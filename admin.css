@@ -200,4 +200,13 @@ dialog .form-action { display: flex; gap: 8px; margin-top: 12px; }
     color: #b91c1c;
     font-size: 13px;
 }
-.form-error:empty { display: none; }
+.form-error:empty { 
+    display: none; 
+}
+
+.two-col { 
+    display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; }
+    .two-col > div { min-width: 0; }   /* lets each table shrink instead of overflowing */
+    @media (max-width: 800px) { .two-col { grid-template-columns: 1fr; } }
+    dialog.wide { width: min(700px, 95vw); 
+}
