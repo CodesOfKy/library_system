@@ -1,0 +1,206 @@
+/* =========================================================
+   register.css - styles for register.php
+   Theme: royal blue + grey (matches login.css and admin.css)
+   Link it in <head> of register.php (replaces design.css there):
+   <link rel="stylesheet" href="register.css">
+   ========================================================= */
+
+:root {
+    --royal-blue:       #4169e1;
+    --royal-blue-dark:  #2f52c4;
+    --royal-blue-deep:  #1f3a93;
+    --royal-blue-tint:  #e8edfc;
+
+    --grey-50:  #f5f6f8;
+    --grey-100: #eceef2;
+    --grey-200: #d9dce3;
+    --grey-400: #9aa1ae;
+    --grey-600: #5b6270;
+    --grey-800: #2d313a;
+
+    --green: #15803d;
+    --red:   #c62828;
+}
+
+* { box-sizing: border-box; }
+
+/* ---------- Page ---------- */
+body.register {
+    max-width: none;
+    margin: 0;
+    min-height: 100vh;
+    padding: 32px 16px 48px;
+    font-family: "Segoe UI", Roboto, Arial, sans-serif;
+    color: var(--grey-800);
+    background: linear-gradient(160deg, var(--grey-100) 0%, var(--grey-200) 100%);
+}
+
+/* Everything sits in one centered column */
+.register > h2,
+.register > .msg,
+.register > form,
+.register > a {
+    display: block;
+    width: 100%;
+    max-width: 460px;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+/* ---------- Heading ---------- */
+.register > h2 {
+    margin-top: 0;
+    margin-bottom: 18px;
+    text-align: center;
+    font-size: 28px;
+    font-weight: 700;
+    letter-spacing: .3px;
+    color: var(--royal-blue);
+}
+
+/* ---------- Success / error messages ---------- */
+.register .msg {
+    margin-top: 0;
+    margin-bottom: 12px;
+    padding: 11px 14px;
+    border-radius: 8px;
+    border: 1px solid;
+    font-size: 14px;
+    font-weight: 600;
+}
+.register .ok  { background: #e7f5ec; color: var(--green); border-color: var(--green); }
+.register .bad { background: #fdeaea; color: var(--red);   border-color: var(--red); }
+
+/* ---------- Form card ---------- */
+.register > form {
+    padding: 8px 32px 32px;
+    background: #fff;
+    border-radius: 12px;
+    border-top: 6px solid var(--royal-blue);
+    box-shadow: 0 10px 30px rgba(31, 58, 147, .15),
+                0 2px 6px rgba(45, 49, 58, .08);
+}
+
+/* ---------- Labels ---------- */
+.register label {
+    display: block;
+    margin-top: 16px;
+    margin-bottom: 6px;
+    font-size: 14px;
+    font-weight: 600;
+    color: var(--grey-600);
+}
+
+/* ---------- Inputs & dropdowns ---------- */
+.register input[type="text"],
+.register select {
+    width: 100%;
+    padding: 12px 14px;
+    margin-top: 0;
+    font-size: 16px;
+    color: var(--grey-800);
+    background: var(--grey-50);
+    border: 1.5px solid var(--grey-200);
+    border-radius: 8px;
+    outline: none;
+    transition: border-color .15s, box-shadow .15s, background .15s;
+}
+.register input::placeholder { color: var(--grey-400); }
+.register input:hover,
+.register select:hover { border-color: var(--grey-400); }
+.register input:focus,
+.register select:focus {
+    background: #fff;
+    border-color: var(--royal-blue);
+    box-shadow: 0 0 0 3px rgba(65, 105, 225, .2);
+}
+
+/* ---------- School level (SHS / College) as pill choices ---------- */
+.register label:has(> input[type="radio"]) {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    margin: 0 8px 0 0;
+    padding: 9px 18px;
+    font-size: 15px;
+    font-weight: 600;
+    color: var(--grey-600);
+    background: var(--grey-50);
+    border: 1.5px solid var(--grey-200);
+    border-radius: 999px;
+    cursor: pointer;
+    transition: all .15s;
+}
+.register label:has(> input[type="radio"]):hover { border-color: var(--royal-blue); }
+.register label:has(> input[type="radio"]:checked) {
+    color: var(--royal-blue-deep);
+    background: var(--royal-blue-tint);
+    border-color: var(--royal-blue);
+}
+.register input[type="radio"] {
+    width: 16px;
+    height: 16px;
+    margin: 0;
+    accent-color: var(--royal-blue);
+}
+
+/* ---------- RFID field ---------- */
+.register #uid {
+    background: var(--grey-100);
+    color: var(--grey-600);
+    border-style: dashed;
+    cursor: default;
+}
+.register #status {
+    margin: 8px 0 0;
+    padding: 8px 12px;
+    font-size: 14px;
+    color: var(--grey-600);
+    background: var(--grey-50);
+    border-left: 4px solid var(--grey-400);
+    border-radius: 4px;
+}
+
+/* ---------- Buttons ---------- */
+.register button {
+    width: 100%;
+    margin-top: 24px;
+    padding: 13px;
+    font-size: 16px;
+    font-weight: 700;
+    letter-spacing: .4px;
+    color: #fff;
+    background: var(--royal-blue);
+    border: 1px solid var(--royal-blue);
+    border-radius: 8px;
+    cursor: pointer;
+    transition: background .15s, box-shadow .15s, transform .05s;
+}
+.register button:hover {
+    background: var(--royal-blue-dark);
+    border-color: var(--royal-blue-dark);
+    box-shadow: 0 4px 12px rgba(65, 105, 225, .35);
+}
+.register button:active { background: var(--royal-blue-deep); transform: translateY(1px); }
+.register button:focus-visible { outline: 3px solid var(--royal-blue-tint); outline-offset: 2px; }
+.register button:disabled { background: var(--grey-400); border-color: var(--grey-400); box-shadow: none; cursor: not-allowed; }
+
+/* "GO TO LIBRARY" - secondary outline button below the card */
+.register > a { text-decoration: none; }
+.register > a button {
+    margin-top: 0;
+    color: var(--royal-blue);
+    background: #fff;
+    border: 1.5px solid var(--royal-blue);
+}
+.register > a button:hover {
+    color: #fff;
+    background: var(--royal-blue);
+    border-color: var(--royal-blue);
+}
+
+/* ---------- Small screens ---------- */
+@media (max-width: 480px) {
+    .register > form { padding: 4px 20px 24px; }
+    .register > h2   { font-size: 24px; }
+}

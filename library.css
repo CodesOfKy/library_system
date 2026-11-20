@@ -1,0 +1,217 @@
+/* =========================================================
+   library.css - styles for library.php (RFID log in / out screen)
+   Theme: royal blue + grey (matches login, admin and register)
+   Link it in <head> of library.php (replaces design.css there):
+   <link rel="stylesheet" href="library.css">
+   ========================================================= */
+
+:root {
+    --royal-blue:       #4169e1;
+    --royal-blue-dark:  #2f52c4;
+    --royal-blue-deep:  #1f3a93;
+    --royal-blue-tint:  #e8edfc;
+
+    --grey-50:  #f5f6f8;
+    --grey-100: #eceef2;
+    --grey-200: #d9dce3;
+    --grey-400: #9aa1ae;
+    --grey-600: #5b6270;
+    --grey-800: #2d313a;
+
+    --green: #15803d;
+    --red:   #c62828;
+
+    --shadow: 0 1px 3px rgba(45, 49, 58, .08), 0 4px 12px rgba(31, 58, 147, .06);
+}
+
+* { box-sizing: border-box; }
+
+/* ---------- Page ---------- */
+body.library {
+    max-width: none;
+    margin: 0;
+    min-height: 100vh;
+    padding: 0 0 48px;
+    font-family: "Segoe UI", Roboto, Arial, sans-serif;
+    color: var(--grey-800);
+    background: var(--grey-100);
+}
+
+/* Page title = blue banner (first h1, direct child of body) */
+.library > h1 {
+    margin: 0 0 28px;
+    padding: 20px 32px;
+    text-align: center;
+    font-size: 28px;
+    letter-spacing: .5px;
+    color: #fff;
+    background: var(--royal-blue);
+    box-shadow: 0 2px 8px rgba(31, 58, 147, .3);
+}
+
+/* Content stays in a centered column */
+.library > #visitors,
+.library > #card,
+.library > .tables {
+    max-width: 1200px;
+    margin-left: auto;
+    margin-right: auto;
+    width: calc(100% - 32px);
+}
+
+/* ---------- Visitor counter ---------- */
+.library #visitors {
+    margin-bottom: 20px;
+    padding: 20px 24px;
+    background: #fff;
+    border: 1px solid var(--grey-200);
+    border-left: 6px solid var(--royal-blue);
+    border-radius: 10px;
+    box-shadow: var(--shadow);
+}
+.library #visitors h1 { margin: 0 0 4px; font-size: 24px; color: var(--grey-800); }
+.library #count { color: var(--royal-blue); font-size: 1.3em; font-weight: 700; }
+.library #rangeLabel { margin: 0 0 14px; color: var(--grey-600); font-size: 14px; }
+
+.library .filters { display: flex; gap: 8px; flex-wrap: wrap; align-items: center; }
+.library .filters button {
+    padding: 8px 16px;
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+    color: var(--grey-600);
+    background: #fff;
+    border: 1.5px solid var(--grey-200);
+    border-radius: 6px;
+    transition: all .15s;
+}
+.library .filters button:hover { border-color: var(--royal-blue); color: var(--royal-blue); }
+.library .filters button.active {
+    background: var(--royal-blue);
+    border-color: var(--royal-blue);
+    color: #fff;
+}
+.library .filters input[type="date"] {
+    padding: 7px 10px;
+    font-size: 14px;
+    color: var(--grey-800);
+    background: var(--grey-50);
+    border: 1.5px solid var(--grey-200);
+    border-radius: 6px;
+    outline: none;
+}
+.library .filters input[type="date"]:focus {
+    border-color: var(--royal-blue);
+    box-shadow: 0 0 0 3px rgba(65, 105, 225, .2);
+}
+
+/* ---------- Scan card (big status box) ---------- */
+.library #card {
+    margin-bottom: 24px;
+    padding: 36px 30px;
+    text-align: center;
+    font-size: 22px;
+    font-weight: 600;
+    color: var(--grey-600);
+    background: #fff;
+    border: 2px dashed var(--grey-400);
+    border-radius: 12px;
+    box-shadow: var(--shadow);
+    transition: background .2s, border-color .2s, color .2s;
+}
+.library #card h2 { margin: 0 0 10px; font-size: 30px; }
+
+/* logged in */
+.library #card.ok  { background: #e7f5ec; color: var(--green); border: 2px solid var(--green); }
+/* logged out / cancelled */
+.library #card.out { background: var(--royal-blue-tint); color: var(--royal-blue-deep); border: 2px solid var(--royal-blue); }
+/* error / warning */
+.library #card.bad { background: #fdeaea; color: var(--red); border: 2px solid var(--red); }
+
+/* ---------- Tables ---------- */
+.library .tables { display: flex; gap: 20px; flex-wrap: wrap; }
+.library .tables > div {
+    flex: 1;
+    min-width: 320px;
+    padding: 20px;
+    background: #fff;
+    border: 1px solid var(--grey-200);
+    border-radius: 10px;
+    box-shadow: var(--shadow);
+}
+.library .tables h3 {
+    margin: 0 0 12px;
+    padding-bottom: 10px;
+    font-size: 17px;
+    color: var(--royal-blue-deep);
+    border-bottom: 2px solid var(--royal-blue-tint);
+}
+
+.library table { width: 100%; border-collapse: collapse; margin-top: 4px; font-size: 14px; }
+.library th, .library td {
+    border: 0;
+    border-bottom: 1px solid var(--grey-100);
+    padding: 10px 12px;
+    text-align: left;
+}
+.library th {
+    font-size: 12px;
+    text-transform: uppercase;
+    letter-spacing: .5px;
+    color: var(--grey-600);
+    background: var(--grey-50);
+    border-bottom: 2px solid var(--grey-200);
+}
+.library tbody tr:hover { background: var(--royal-blue-tint); }
+
+/* ---------- Cancel-login popup ---------- */
+.library .modal {
+    position: fixed;
+    inset: 0;
+    z-index: 10;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: rgba(45, 49, 58, .55);
+}
+.library .modal[hidden] { display: none; }
+.library .modal-box {
+    width: 90%;
+    max-width: 440px;
+    padding: 30px;
+    text-align: center;
+    font-size: 17px;
+    color: var(--grey-800);
+    background: #fff;
+    border-top: 6px solid var(--royal-blue);
+    border-radius: 12px;
+    box-shadow: 0 20px 50px rgba(31, 58, 147, .3);
+}
+.library .modal-box h2 { margin: 0 0 10px; color: var(--royal-blue); }
+.library .modal-box p  { margin: 0; color: var(--grey-600); }
+.library .modal-actions { display: flex; gap: 10px; justify-content: center; flex-wrap: wrap; margin-top: 24px; }
+.library .modal-actions button {
+    padding: 11px 18px;
+    font-size: 15px;
+    font-weight: 600;
+    cursor: pointer;
+    color: #fff;
+    background: var(--royal-blue);
+    border: 1.5px solid var(--royal-blue);
+    border-radius: 8px;
+    transition: background .15s;
+}
+.library .modal-actions button:hover { background: var(--royal-blue-dark); border-color: var(--royal-blue-dark); }
+.library .modal-actions #btnCancelYes {
+    color: var(--red);
+    background: #fff;
+    border-color: var(--red);
+}
+.library .modal-actions #btnCancelYes:hover { color: #fff; background: var(--red); }
+
+/* ---------- Small screens ---------- */
+@media (max-width: 600px) {
+    .library > h1       { font-size: 22px; padding: 16px; }
+    .library #card      { font-size: 18px; padding: 26px 18px; }
+    .library .tables > div { min-width: 0; width: 100%; }
+}

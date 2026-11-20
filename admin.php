@@ -16,6 +16,21 @@ require 'audit.php';
 const HASH_KEY = 'change-this-secret';                                       // secret used to hash RFID UIDs for display
 $docs = ['student_id' => 'Student ID', 'reg_form' => 'Registration Form'];    // papers needed to confirm a re-validation
 
+// Reasons shown in the Re-validate drop-down (order = order on screen).
+// 'Other' lets the admin type their own reason.
+const OTHER_REASON = 'Other';
+$reasons = [
+    'Lost / broken NFC sticker',
+    OTHER_REASON,
+    'Change of name',
+    'Change of grade / year level',
+    'Change of course / strand',
+    'Change of section',
+    'New school year / semester enrollment',
+    'Transferee',
+    'Incorrect details in the record',
+];
+
 function hide_uid($uid) {
     return substr(hash_hmac('sha256', $uid, HASH_KEY), 0, 12);
 }
@@ -46,31 +61,34 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
     } elseif (isset($_POST['request_revalidation'])) {
         $id     = trim($_POST['student_id'] ?? '');
-        $reason = trim($_POST['reason'] ?? '');
-        if (mb_strlen($reason) >= 5) {
+        $choice = $_POST['reason_choice'] ?? '';
+        $other  = trim($_POST['reason_other'] ?? '');
+
+        // The reason must be one from the list; "Other" needs a typed reason
+        $reason = '';
+        if (in_array($choice, $reasons, true)) {
+            $reason = $choice === OTHER_REASON ? ($other === '' ? '' : "Other: $other") : $choice;
+        }
+
+        if ($choice === '' || !in_array($choice, $reasons, true)) {
+            $_SESSION['flash'] = ['error', 'Please choose a reason.'];
+        } elseif ($choice === OTHER_REASON && mb_strlen($other) < 3) {
+            $_SESSION['flash'] = ['error', 'Please type the reason (at least 3 characters).'];
+        } else {
             // Only inserts if the student exists and has no pending request yet
             $stmt = $conn->prepare("INSERT INTO revalidations (student_id, reason)
                                     SELECT student_id, ? FROM students
                                     WHERE student_id = ?
                                       AND NOT EXISTS (SELECT 1 FROM revalidations WHERE student_id = ? AND status = 'pending')");
             $stmt->bind_param("sss", $reason, $id, $id);
-            $stmt->execute();
-            if ($stmt->affected_rows > 0) {
+            $ok = $stmt->execute();
+            if ($ok && $stmt->affected_rows > 0) {
                 log_action($conn, 'Re-validation', "$id requested: $reason");
-            }
-        }
-
-    } elseif (isset($_POST['confirm_revalidation'])) {
-        $id      = (int)$_POST['id'];
-        $checked = array_intersect(array_keys($docs), (array)($_POST['docs'] ?? []));
-        if (count($checked) === count($docs)) {          // every paper must be checked
-            $list = implode(',', $checked);
-            $stmt = $conn->prepare("UPDATE revalidations SET status = 'confirmed', docs_checked = ?, confirmed_at = NOW()
-                                    WHERE id = ? AND status = 'pending'");
-            $stmt->bind_param("si", $list, $id);
-            $stmt->execute();
-            if ($stmt->affected_rows > 0) {
-                log_action($conn, 'Re-validation', one($conn, "SELECT student_id FROM revalidations WHERE id = $id") . ' confirmed');
+                $_SESSION['flash'] = ['ok', "Re-validation requested for $id. It is now in the Waiting for Re-validation list."];
+            } elseif (!$ok) {
+                $_SESSION['flash'] = ['error', 'Could not save the request: ' . $stmt->error];
+            } else {
+                $_SESSION['flash'] = ['error', "Nothing was saved. $id was not found or already has a request waiting."];
             }
         }
 
@@ -79,12 +97,17 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $conn->query("UPDATE revalidations SET status = 'cancelled' WHERE id = $id AND status = 'pending'");
         if ($conn->affected_rows > 0) {
             log_action($conn, 'Re-validation', one($conn, "SELECT student_id FROM revalidations WHERE id = $id") . ' cancelled');
+            $_SESSION['flash'] = ['ok', 'Re-validation request cancelled.'];
         }
     }
 
     header("Location: " . $_SERVER['PHP_SELF']);
     exit();
 }
+
+// ---- One-time message shown after a re-validation step ----
+$flash = $_SESSION['flash'] ?? null;
+unset($_SESSION['flash']);
 
 // ---- Summary numbers ----
 $totalStudents = (int)$conn->query("SELECT COUNT(*) AS c FROM students")->fetch_assoc()['c'];
@@ -135,6 +158,8 @@ $students = $conn->query("
            (SELECT DATE_FORMAT(MAX(login_time), '%b %d, %Y %h:%i %p')
               FROM library_in WHERE student_id = s.student_id) AS last_login,
            (SELECT COUNT(*) FROM library_in WHERE student_id = s.student_id) AS total_visits,
+           (SELECT DATE_FORMAT(MAX(confirmed_at), '%b %d, %Y %h:%i %p')
+              FROM revalidations WHERE student_id = s.student_id AND status = 'confirmed') AS last_reval,
            (SELECT COUNT(*) FROM revalidations
               WHERE student_id = s.student_id AND status = 'pending') AS pending
     FROM students s
@@ -144,7 +169,8 @@ $students = $conn->query("
 
 // ---- Waiting for re-validation ----
 $pending = $conn->query("
-    SELECT r.id, r.reason, s.student_id, s.name,
+    SELECT r.id, r.reason, s.student_id, s.name, s.first_name, s.middle_name, s.last_name,
+           s.level, s.grade, s.course, s.section,
            DATE_FORMAT(r.requested_at, '%b %d, %Y %h:%i %p') AS requested
     FROM revalidations r JOIN students s ON s.student_id = r.student_id
     WHERE r.status = 'pending'
@@ -189,6 +215,16 @@ $auditLog = $conn->query("
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Admin Dashboard</title>
+    <script>
+    // Shows any JavaScript error as a red bar at the top, so problems are easy to see and report
+    window.addEventListener('error', e => {
+        if (e.target && e.target !== window) return;           // ignore failed images / files
+        const bar = document.createElement('div');
+        bar.style.cssText = 'position:fixed;top:0;left:0;right:0;z-index:99999;padding:10px 16px;background:#c62828;color:#fff;font:14px monospace';
+        bar.textContent = 'Page error: ' + e.message + ' (line ' + e.lineno + ')';
+        (document.body || document.documentElement).appendChild(bar);
+    });
+    </script>
     <link rel="stylesheet" href="admin.css">
     <style>
         [hidden] { display: none !important; }     /* rows hidden by "View all" */
@@ -208,6 +244,10 @@ $auditLog = $conn->query("
     </header>
 
     <main>
+        <?php if ($flash): ?>
+            <p class="status <?= $flash[0] === 'ok' ? 'ok' : 'error' ?>" id="flash"><?= htmlspecialchars($flash[1]) ?></p>
+        <?php endif; ?>
+
         <!-- Summary cards -->
         <div class="cards">
             <div class="card"><p>Total Students</p><h1><?= $totalStudents ?></h1></div>
@@ -248,12 +288,13 @@ $auditLog = $conn->query("
                             <th>Status</th>
                             <th>Last Login</th>
                             <th>Total Visits</th>
+                            <th>Last Re-validated</th>
                             <th>Actions</th>
                         </tr>
                     </thead>
                     <tbody>
                     <?php if (!$students): ?>
-                        <tr><td colspan="8">No students found.</td></tr>
+                        <tr><td colspan="9">No students found.</td></tr>
                     <?php endif; ?>
                     <?php foreach ($students as $s): ?>
                         <tr data-id="<?= htmlspecialchars($s['student_id']) ?>"
@@ -272,6 +313,7 @@ $auditLog = $conn->query("
                             </td>
                             <td><?= htmlspecialchars($s['last_login'] ?? '—') ?></td>
                             <td><?= (int)$s['total_visits'] ?></td>
+                            <td><?= htmlspecialchars($s['last_reval'] ?? '—') ?></td>
                             <td class="actions">
                                 <button type="button" class="edit">Edit</button>
                                 <button type="button" class="delete">Delete</button>
@@ -294,25 +336,32 @@ $auditLog = $conn->query("
             <div class="scroll">
                 <table class="limited">
                     <thead>
-                        <tr><th>Student</th><th>Reason</th><th>Requested</th><th>Documents &amp; Action</th></tr>
+                        <tr><th>Student</th><th>Reason</th><th>Requested</th><th>Action</th></tr>
                     </thead>
                     <tbody>
                     <?php if (!$pending): ?>
                         <tr><td colspan="4">No students are waiting for re-validation.</td></tr>
                     <?php endif; ?>
                     <?php foreach ($pending as $p): ?>
-                        <tr>
+                        <tr data-rid="<?= $p['id'] ?>"
+                            data-id="<?= htmlspecialchars($p['student_id']) ?>"
+                            data-name="<?= htmlspecialchars($p['name']) ?>"
+                            data-first="<?= htmlspecialchars($p['first_name']) ?>"
+                            data-middle="<?= htmlspecialchars($p['middle_name']) ?>"
+                            data-last="<?= htmlspecialchars($p['last_name']) ?>"
+                            data-level="<?= htmlspecialchars($p['level']) ?>"
+                            data-grade="<?= htmlspecialchars($p['grade'] ?? '') ?>"
+                            data-course="<?= htmlspecialchars($p['course'] ?? '') ?>"
+                            data-section="<?= htmlspecialchars($p['section'] ?? '') ?>"
+                            data-reason="<?= htmlspecialchars($p['reason']) ?>">
                             <td><?= htmlspecialchars($p['name']) ?> (<?= htmlspecialchars($p['student_id']) ?>)</td>
                             <td><?= htmlspecialchars($p['reason']) ?></td>
                             <td><?= $p['requested'] ?></td>
-                            <td>
-                                <form method="POST">
+                            <td class="actions">
+                                <button type="button" class="review">Review &amp; Confirm</button>
+                                <form method="POST" style="display:inline">
                                     <input type="hidden" name="id" value="<?= $p['id'] ?>">
-                                    <?php foreach ($docs as $key => $label): ?>
-                                        <label><input type="checkbox" name="docs[]" value="<?= $key ?>" required> <?= $label ?></label>
-                                    <?php endforeach; ?>
-                                    <button type="submit" name="confirm_revalidation">Confirm</button>
-                                    <button type="submit" name="cancel_revalidation" formnovalidate
+                                    <button type="submit" name="cancel_revalidation" class="delete"
                                             onclick="return confirm('Cancel this request?')">Cancel</button>
                                 </form>
                             </td>
@@ -434,12 +483,74 @@ $auditLog = $conn->query("
             <p id="revalName"></p>
             <input type="hidden" name="student_id" id="revalId">
 
-            <label for="revalReason">Reason for re-validation</label>
-            <textarea name="reason" id="revalReason" minlength="5" maxlength="255" rows="4" required></textarea>
+            <label for="revalChoice">Reason for re-validation</label>
+            <select name="reason_choice" id="revalChoice" required>
+                <option value="">Select a reason...</option>
+                <?php foreach ($reasons as $r): ?>
+                    <option value="<?= htmlspecialchars($r) ?>"><?= htmlspecialchars($r) ?></option>
+                <?php endforeach; ?>
+            </select>
+
+            <textarea name="reason_other" id="revalOther" minlength="3" maxlength="240" rows="3"
+                      placeholder="Type the reason..." hidden></textarea>
 
             <div class="form-actions">
                 <button type="submit" name="request_revalidation">Submit</button>
                 <button type="button" id="revalCancel" class="ghost">Cancel</button>
+            </div>
+        </form>
+    </dialog>
+
+    <!-- Confirm re-validation: check details, check papers, scan the ID card -->
+    <dialog id="confirmDialog">
+        <form id="confirmForm">
+            <h3>Confirm Re-validation</h3>
+            <p id="cvWho"></p>
+            <p id="cvMsg" class="form-error"></p>
+            <input type="hidden" id="cvRid">
+
+            <label for="cvId">Student Number</label>
+            <input type="text" id="cvId" readonly>
+
+            <label for="cvFirst">First Name</label>
+            <input type="text" id="cvFirst" maxlength="30" required>
+
+            <label for="cvMiddle">Middle Name (optional)</label>
+            <input type="text" id="cvMiddle" maxlength="30">
+
+            <label for="cvLast">Last Name</label>
+            <input type="text" id="cvLast" maxlength="30" required>
+
+            <label>School Level</label>
+            <div class="radio-row">
+                <label class="check"><input type="radio" name="cvLevel" value="SHS"> SHS</label>
+                <label class="check"><input type="radio" name="cvLevel" value="College"> College</label>
+            </div>
+
+            <label for="cvGrade">Grade / Year</label>
+            <select id="cvGrade" required></select>
+
+            <label for="cvCourse">Course</label>
+            <select id="cvCourse" required></select>
+
+            <label for="cvSection">Section</label>
+            <input type="text" id="cvSection" maxlength="10" required>
+
+            <label>Papers checked</label>
+            <?php foreach ($docs as $key => $label): ?>
+                <label class="check"><input type="checkbox" class="cvDoc" value="<?= $key ?>"> <?= $label ?></label>
+            <?php endforeach; ?>
+
+            <label>ID card</label>
+            <div class="radio-row">
+                <label class="check"><input type="radio" name="cvCard" value="current" checked> Same card</label>
+                <label class="check"><input type="radio" name="cvCard" value="new"> New card (lost / broken)</label>
+            </div>
+            <p id="cvScan" class="status">Waiting for the card...</p>
+
+            <div class="form-actions">
+                <button type="submit" id="cvConfirm" disabled>Confirm</button>
+                <button type="button" id="cvCancel" class="ghost">Close</button>
             </div>
         </form>
     </dialog>
@@ -504,7 +615,8 @@ $auditLog = $conn->query("
     });
 
     // ---- Graph ----
-    const chart = new Chart($('visitsChart'), {
+    // If the Chart.js file can't load (no internet), skip the graph so the buttons below still work
+    const chart = typeof Chart === 'undefined' ? null : new Chart($('visitsChart'), {
         type: 'bar',
         data: {
             labels: <?= json_encode($labels) ?>,
@@ -515,6 +627,7 @@ $auditLog = $conn->query("
 
     // ---- PDF report (summary, graph, students, log ins, log outs) ----
     $('pdfBtn').addEventListener('click', () => {
+        if (!window.jspdf) { alert('The PDF library could not load. Check your internet connection and refresh the page.'); return; }
         const doc = new window.jspdf.jsPDF();
         const filters = <?= json_encode('Grade: ' . ($fGrade ?: 'All') . ' | Course: ' . ($fCourse ?: 'All')) ?>;
 
@@ -531,8 +644,12 @@ $auditLog = $conn->query("
 
         let y = doc.lastAutoTable.finalY + 8;
         doc.text('Visits, last 14 days (' + filters + ')', 14, y);
-        const w = 180, h = w * chart.height / chart.width;
-        doc.addImage(chart.toBase64Image(), 'PNG', 14, y + 3, w, h);
+        let h = 0;
+        if (chart) {
+            const w = 180;
+            h = w * chart.height / chart.width;
+            doc.addImage(chart.toBase64Image(), 'PNG', 14, y + 3, w, h);
+        }
 
         y += h + 14;
         doc.text('Students', 14, y);
@@ -617,12 +734,152 @@ $auditLog = $conn->query("
             const row = btn.closest('tr');
             $('revalId').value = row.dataset.id;
             $('revalName').textContent = row.dataset.name + ' (' + row.dataset.id + ')';
-            $('revalReason').value = '';
+            $('revalChoice').value = '';
+            $('revalOther').value = '';
+            $('revalOther').hidden = true;
+            $('revalOther').required = false;
             $('revalDialog').showModal();
         });
     });
 
     $('revalCancel').addEventListener('click', () => $('revalDialog').close());
+
+    // "Other" shows a box to type the reason
+    $('revalChoice').addEventListener('change', function () {
+        const other = this.value === <?= json_encode(OTHER_REASON) ?>;
+        $('revalOther').hidden = !other;
+        $('revalOther').required = other;
+        if (other) $('revalOther').focus();
+    });
+
+    // ---- Confirm re-validation: review details, check papers, scan the card ----
+    const OPTIONS = <?= json_encode($options) ?>;
+    let cvSid = '', cvScanId = 0, cvBaseline = null, cvTimer = null;
+
+    function cvFillDropdowns(grade, course) {
+        const level = document.querySelector('input[name=cvLevel]:checked')?.value;
+        for (const [kind, id, chosen] of [['grade', 'cvGrade', grade], ['course', 'cvCourse', course]]) {
+            $(id).replaceChildren(
+                new Option('Select...', ''),
+                ...OPTIONS.filter(o => o.kind === kind && o.level === level)
+                          .map(o => new Option(o.name, o.name, false, o.name === chosen))
+            );
+        }
+    }
+    document.querySelectorAll('input[name=cvLevel]').forEach(r =>
+        r.addEventListener('change', () => cvFillDropdowns('', '')));
+
+    const cvMode = () => document.querySelector('input[name=cvCard]:checked')?.value || 'current';
+
+    function cvPrompt() {
+        cvScanId = 0;
+        cvBaseline = null;                                  // the next scan must be a fresh tap
+        cvSetScan(cvMode() === 'new'
+            ? 'Waiting for the NEW card... Ask the student to tap the new card on the reader.'
+            : 'Waiting for the card... Ask the student to tap their current ID on the reader.', '');
+    }
+    document.querySelectorAll('input[name=cvCard]').forEach(r => r.addEventListener('change', cvPrompt));
+
+    function cvSetScan(text, state) {
+        $('cvScan').textContent = text;
+        $('cvScan').className = 'status' + (state ? ' ' + state : '');
+        $('cvConfirm').disabled = state !== 'ok';
+    }
+
+    // Looks at the newest card scan every half second while the pop-up is open
+    async function cvCheckScan() {
+        try {
+            const scan = await (await fetch('api.php?action=latest', { cache: 'no-store' })).json();
+            const id = Number(scan.id);
+            if (cvBaseline === null) { cvBaseline = id; return; }   // ignore scans from before the pop-up opened
+            if (id <= cvBaseline) return;
+            cvBaseline = id;
+
+            if (cvMode() === 'new') {
+                // Replacing a lost / broken card: the scanned card must be unregistered
+                if (!scan.registered) {
+                    cvScanId = id;
+                    cvSetScan('New card detected. It will replace the old card when you confirm.', 'ok');
+                } else if (scan.student_id === cvSid) {
+                    cvScanId = 0;
+                    cvSetScan("That is this student's current card. Choose 'Same card', or scan a new card.", 'error');
+                } else {
+                    cvScanId = 0;
+                    cvSetScan('That card is already registered to ' + scan.name + '. Scan a new, unregistered card.', 'error');
+                }
+            } else if (!scan.registered) {
+                cvScanId = 0;
+                cvSetScan("This card is not registered. Scan the student's own card, or choose 'New card'.", 'error');
+            } else if (scan.student_id !== cvSid) {
+                cvScanId = 0;
+                cvSetScan('This card belongs to another student. Scan again.', 'error');
+            } else {
+                cvScanId = id;
+                cvSetScan('Card verified: ' + scan.name + '. You can confirm now.', 'ok');
+            }
+        } catch (e) {
+            cvSetScan('Cannot reach api.php', 'error');
+        }
+    }
+
+    document.querySelectorAll('.review').forEach(btn => {
+        btn.addEventListener('click', () => {
+            const d = btn.closest('tr').dataset;
+            cvSid = d.id;
+            cvScanId = 0;
+            cvBaseline = null;
+            $('cvRid').value = d.rid;
+            $('cvWho').textContent = d.name + ' (' + d.id + ')';
+            $('cvId').value = d.id;
+            $('cvFirst').value = d.first;
+            $('cvMiddle').value = d.middle;
+            $('cvLast').value = d.last;
+            $('cvSection').value = d.section;
+            document.querySelectorAll('input[name=cvLevel]').forEach(r => r.checked = r.value === d.level);
+            cvFillDropdowns(d.grade, d.course);
+            document.querySelectorAll('.cvDoc').forEach(c => c.checked = false);
+            $('cvMsg').textContent = '';
+            // A lost / broken sticker request starts on "New card"
+            document.querySelectorAll('input[name=cvCard]').forEach(r =>
+                r.checked = r.value === (d.reason.startsWith('Lost / broken') ? 'new' : 'current'));
+            cvPrompt();
+            $('confirmDialog').showModal();
+            cvCheckScan();
+            clearInterval(cvTimer);
+            cvTimer = setInterval(cvCheckScan, 500);
+        });
+    });
+
+    $('confirmDialog').addEventListener('close', () => clearInterval(cvTimer));
+    $('cvCancel').addEventListener('click', () => $('confirmDialog').close());
+
+    $('confirmForm').addEventListener('submit', async e => {
+        e.preventDefault();
+        if (!cvScanId) { $('cvMsg').textContent = "Scan the student's ID card first."; return; }
+
+        const data = new URLSearchParams({
+            revalidation_id: $('cvRid').value,
+            scan_id:     cvScanId,
+            first_name:  $('cvFirst').value,
+            middle_name: $('cvMiddle').value,
+            last_name:   $('cvLast').value,
+            level:       document.querySelector('input[name=cvLevel]:checked')?.value || '',
+            grade:       $('cvGrade').value,
+            course:      $('cvCourse').value,
+            section:     $('cvSection').value,
+            card_mode:   cvMode()
+        });
+        document.querySelectorAll('.cvDoc:checked').forEach(c => data.append('docs[]', c.value));
+
+        const r = await studentsApi('confirm_revalidation', data);
+        if (!r) return;
+        if (r.success) {
+            location.reload();
+        } else {
+            $('cvMsg').textContent = r.message;
+            cvPrompt();                                     // scan again after any error
+        }
+    });
 
     // Activity log pop-up
     $('auditBtn').addEventListener('click', () => $('auditDialog').showModal());
