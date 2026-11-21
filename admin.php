@@ -1,9 +1,5 @@
 <?php
-session_start();
-if (!isset($_SESSION['admin_id'])) {
-    header("Location: login.php");
-    exit();
-}
+require_once 'require_admin.php';
 
 mysqli_report(MYSQLI_REPORT_OFF);
 $conn = new mysqli("localhost", "root", "", "arduino_db");
@@ -237,7 +233,7 @@ $auditLog = $conn->query("
         <h2>Admin Dashboard</h2>
         <div>
             <span><?= htmlspecialchars($_SESSION['admin_email']) ?></span>
-            <button id="pdfBtn">Download PDF</button>
+            <button id="pdfBtn">Report</button>
             <button id="auditBtn">Activity Log</button>
             <button id="logoutBtn">Log Out</button>
         </div>
