@@ -48,7 +48,7 @@ if ($action === 'latest') {
         echo json_encode(["id" => 0, "uid" => "", "registered" => false, "name" => ""]);
         exit;
     }
-    $stmt = $conn->prepare("SELECT name FROM students WHERE rfid_uid = ?");
+    $stmt = $conn->prepare("SELECT name, student_id FROM students WHERE rfid_uid = ?");
     $stmt->bind_param("s", $row['uid']);
     $stmt->execute();
     $s = $stmt->get_result()->fetch_assoc();
@@ -57,7 +57,8 @@ if ($action === 'latest') {
         "id" => (int)$row['id'],
         "uid" => $row['uid'],
         "registered" => (bool)$s,
-        "name" => $s['name'] ?? ""
+        "name" => $s['name'] ?? "",
+        "student_id" => $s['student_id'] ?? ""
     ]);
     exit;
 }

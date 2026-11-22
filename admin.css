@@ -1,39 +1,90 @@
+/* =========================================================
+   admin.css - styles for admin.php
+   Theme: royal blue + grey (matches login.css)
+   Drop-in replacement for the existing admin.css
+   ========================================================= */
+
+:root {
+    --royal-blue:       #4169e1;
+    --royal-blue-dark:  #2f52c4;
+    --royal-blue-deep:  #1f3a93;
+    --royal-blue-tint:  #e8edfc;
+
+    --grey-50:  #f5f6f8;
+    --grey-100: #eceef2;
+    --grey-200: #d9dce3;
+    --grey-400: #9aa1ae;
+    --grey-600: #5b6270;
+    --grey-800: #2d313a;
+
+    --green: #15803d;
+    --amber: #b45309;
+    --red:   #c62828;
+
+    --shadow: 0 1px 3px rgba(45, 49, 58, .08), 0 4px 12px rgba(31, 58, 147, .06);
+}
+
 * { box-sizing: border-box; }
 
 body {
-    font-family: Arial, Helvetica, sans-serif;
-    background: #fafafa;
-    color: #222;
     margin: 0;
+    font-family: "Segoe UI", Roboto, Arial, sans-serif;
+    background: var(--grey-100);
+    color: var(--grey-800);
 }
 
-/* Header */
+/* ---------- Header ---------- */
 header {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    padding: 16px 32px;
-    background: #fff;
-    border-bottom: 1px solid #e5e5e5;
+    flex-wrap: wrap;
+    gap: 10px;
+    padding: 14px 32px;
+    background: var(--royal-blue);
+    color: #fff;
+    box-shadow: 0 2px 8px rgba(31, 58, 147, .3);
 }
-header h2 { margin: 0; font-size: 18px; font-weight: 600; }
-header span { font-size: 14px; color: #666; margin-right: 12px; }
+header h2 { margin: 0; font-size: 20px; font-weight: 700; letter-spacing: .3px; }
+header span { font-size: 14px; color: rgba(255, 255, 255, .85); margin-right: 12px; }
 
+/* Header buttons: white outline on blue */
+header button {
+    background: transparent;
+    color: #fff;
+    border: 1px solid rgba(255, 255, 255, .7);
+}
+header button:hover { background: #fff; color: var(--royal-blue-dark); border-color: #fff; }
+
+/* ---------- Buttons ---------- */
 button {
     padding: 7px 14px;
-    border: 1px solid #222;
-    background: #222;
+    border: 1px solid var(--royal-blue);
+    background: var(--royal-blue);
     color: #fff;
-    border-radius: 4px;
+    border-radius: 6px;
     cursor: pointer;
     font-size: 13px;
+    font-weight: 600;
+    transition: background .15s, color .15s, border-color .15s;
 }
-button:hover { background: #fff; color: #222; }
+button:hover { background: var(--royal-blue-dark); border-color: var(--royal-blue-dark); }
+button:active { background: var(--royal-blue-deep); }
+button:focus-visible { outline: 3px solid var(--royal-blue-tint); outline-offset: 1px; }
+button:disabled {
+    background: var(--grey-200);
+    border-color: var(--grey-200);
+    color: var(--grey-400);
+    cursor: not-allowed;
+}
 
-/* Layout */
+button.ghost { background: #fff; color: var(--royal-blue); }
+button.ghost:hover { background: var(--royal-blue-tint); color: var(--royal-blue-dark); }
+
+/* ---------- Layout ---------- */
 main { max-width: 1100px; margin: 0 auto; padding: 32px; }
 
-/* Summary cards */
+/* ---------- Summary cards ---------- */
 .cards {
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
@@ -42,162 +93,245 @@ main { max-width: 1100px; margin: 0 auto; padding: 32px; }
 }
 .card {
     background: #fff;
-    border: 1px solid #e5e5e5;
-    border-radius: 6px;
+    border: 1px solid var(--grey-200);
+    border-left: 5px solid var(--royal-blue);
+    border-radius: 8px;
     padding: 18px;
+    box-shadow: var(--shadow);
 }
-.card p { margin: 0; font-size: 13px; color: #777; }
-.card h1 { margin: 8px 0 0; font-size: 30px; font-weight: 600; }
+.card p { margin: 0; font-size: 13px; color: var(--grey-600); text-transform: uppercase; letter-spacing: .5px; }
+.card h1 { margin: 8px 0 0; font-size: 32px; font-weight: 700; color: var(--royal-blue); }
 
-/* Panels and tables */
+/* ---------- Panels & tables ---------- */
 .panel {
     background: #fff;
-    border: 1px solid #e5e5e5;
-    border-radius: 6px;
+    border: 1px solid var(--grey-200);
+    border-radius: 8px;
     padding: 20px;
     margin-bottom: 32px;
+    box-shadow: var(--shadow);
 }
-.panel h3 { margin: 0 0 14px; font-size: 16px; font-weight: 600; }
+.panel h3 {
+    margin: 0 0 14px;
+    padding-bottom: 10px;
+    font-size: 16px;
+    font-weight: 700;
+    color: var(--royal-blue-deep);
+    border-bottom: 2px solid var(--royal-blue-tint);
+}
+.panel h4 { margin: 0 0 8px; font-size: 14px; color: var(--grey-600); }
 
 .scroll { overflow-x: auto; }
 
 table { width: 100%; border-collapse: collapse; font-size: 14px; }
-th, td { text-align: left; padding: 10px 12px; border-bottom: 1px solid #eee; }
-th { font-size: 12px; text-transform: uppercase; letter-spacing: .5px; color: #777; }
-tbody tr:hover { background: #fafafa; }
+th, td { text-align: left; padding: 10px 12px; border-bottom: 1px solid var(--grey-100); }
+th {
+    font-size: 12px;
+    text-transform: uppercase;
+    letter-spacing: .5px;
+    color: var(--grey-600);
+    background: var(--grey-50);
+    border-bottom: 2px solid var(--grey-200);
+}
+tbody tr:hover { background: var(--royal-blue-tint); }
 
-/* Search box */
+.view-all { color: var(--royal-blue); font-size: 13px; font-weight: 600; text-decoration: none; }
+.view-all:hover { color: var(--royal-blue-dark); text-decoration: underline; }
+
+/* ---------- Inputs ---------- */
+input[type="text"],
+input[type="email"],
+input[type="password"],
+input[type="date"],
+select {
+    padding: 8px 10px;
+    border: 1.5px solid var(--grey-200);
+    border-radius: 6px;
+    background: var(--grey-50);
+    color: var(--grey-800);
+    font-size: 14px;
+    outline: none;
+    transition: border-color .15s, box-shadow .15s, background .15s;
+}
+input:hover, select:hover { border-color: var(--grey-400); }
+input:focus, select:focus {
+    background: #fff;
+    border-color: var(--royal-blue);
+    box-shadow: 0 0 0 3px rgba(65, 105, 225, .2);
+}
+input[type="checkbox"] { accent-color: var(--royal-blue); }
+
 #search {
     width: 100%;
-    max-width: 280px;
-    padding: 8px 10px;
+    max-width: 320px;
     margin-bottom: 14px;
-    border: 1px solid #ddd;
-    border-radius: 4px;
-    font-size: 14px;
 }
-#search:focus { outline: none; border-color: #222; }
 
-/* Status badges */
+/* ---------- Status badges ---------- */
 .badge {
     display: inline-block;
     padding: 2px 10px;
     border-radius: 10px;
     font-size: 12px;
+    font-weight: 600;
     border: 1px solid;
 }
-.badge.in  { color: #15803d; border-color: #15803d; }
-.badge.out { color: #777;    border-color: #bbb; }
+.badge.in       { color: var(--green); border-color: var(--green); background: #e7f5ec; }
+.badge.out      { color: var(--grey-600); border-color: var(--grey-400); background: var(--grey-50); }
+.badge.borrowed { color: var(--amber); border-color: var(--amber); background: #fdf1e3; }
+.badge.overdue  { color: var(--red); border-color: var(--red); background: #fdeaea; }
+.badge.returned { color: var(--grey-600); border-color: var(--grey-400); background: var(--grey-50); }
 
-/* Filter buttons */
-.filters { display: flex; gap: 8px; margin-bottom: 14px; flex-wrap: wrap; }
+/* ---------- Filter buttons / form rows ---------- */
+.filters { display: flex; gap: 8px; margin-bottom: 14px; flex-wrap: wrap; align-items: center; }
 .filters a {
     padding: 6px 14px;
-    border: 1px solid #ddd;
-    border-radius: 4px;
+    border: 1px solid var(--grey-200);
+    border-radius: 6px;
     font-size: 13px;
-    color: #222;
+    font-weight: 600;
+    color: var(--grey-600);
     text-decoration: none;
     background: #fff;
+    transition: all .15s;
 }
-.filters a:hover { border-color: #222; }
-.filters a.active { background: #222; border-color: #222; color: #fff; }
+.filters a:hover { border-color: var(--royal-blue); color: var(--royal-blue); }
+.filters a.active { background: var(--royal-blue); border-color: var(--royal-blue); color: #fff; }
 
-/* Borrow & Return */
+/* ---------- Borrow & Return ---------- */
 .btn-link {
     display: inline-block;
     padding: 7px 14px;
-    border: 1px solid #222;
-    border-radius: 4px;
+    border: 1px solid var(--royal-blue);
+    border-radius: 6px;
     font-size: 13px;
-    color: #222;
+    font-weight: 600;
+    color: var(--royal-blue);
     text-decoration: none;
     background: #fff;
     margin-right: 8px;
 }
-.btn-link:hover { background: #222; color: #fff; }
+.btn-link:hover { background: var(--royal-blue); color: #fff; }
 
 .hidden { display: none !important; }
 
 .status {
     padding: 12px 14px;
-    border: 1px dashed #ccc;
-    border-radius: 4px;
-    color: #666;
+    border: 1px dashed var(--grey-400);
+    border-radius: 6px;
+    color: var(--grey-600);
     font-size: 14px;
     margin: 0 0 14px;
 }
-.status.ok    { border: 1px solid #15803d; color: #15803d; }
-.status.error { border: 1px solid #b91c1c; color: #b91c1c; }
+.status.ok    { border: 1px solid var(--green); color: var(--green); background: #e7f5ec; }
+.status.error { border: 1px solid var(--red);   color: var(--red);   background: #fdeaea; }
 
 #borrowForm { display: grid; gap: 6px; max-width: 380px; }
-#borrowForm label {
+#borrowForm label,
+dialog label {
     font-size: 12px;
+    font-weight: 600;
     text-transform: uppercase;
     letter-spacing: .5px;
-    color: #777;
+    color: var(--grey-600);
     margin-top: 6px;
 }
-#borrowForm input {
+#borrowForm input,
+dialog input:not([type="checkbox"]):not([type="radio"]),
+dialog select,
+dialog textarea { width: 100%; }
+
+dialog textarea {
     padding: 8px 10px;
-    border: 1px solid #ddd;
-    border-radius: 4px;
+    border: 1.5px solid var(--grey-200);
+    border-radius: 6px;
+    background: var(--grey-50);
+    font: inherit;
     font-size: 14px;
-    width: 100%;
+    outline: none;
+    resize: vertical;
 }
-#borrowForm input:focus { outline: none; border-color: #222; }
-#borrowForm input[readonly] { background: #fafafa; color: #777; }
+dialog textarea:focus {
+    background: #fff;
+    border-color: var(--royal-blue);
+    box-shadow: 0 0 0 3px rgba(65, 105, 225, .2);
+}
+#borrowForm input[readonly],
+dialog input[readonly] { background: var(--grey-100); color: var(--grey-600); }
 #borrowForm p { margin: 6px 0 0; font-size: 14px; }
 .form-actions { display: flex; gap: 8px; margin-top: 10px; }
 
-button.ghost { background: #fff; color: #222; }
-button.ghost:hover { background: #222; color: #fff; }
-
-.badge.borrowed { color: #b45309; border-color: #b45309; }
-.badge.overdue  { color: #b91c1c; border-color: #b91c1c; }
-.badge.returned { color: #777;    border-color: #bbb; }
-
-/* Students: edit / delete */
+/* ---------- Students: edit / delete ---------- */
 .actions { white-space: nowrap; }
 .actions button { padding: 4px 10px; font-size: 12px; margin-right: 4px; }
-.actions .edit { background: #fff; color: #222; }
-.actions .edit:hover { background: #222; color: #fff; }
-.actions .delete { background: #fff; color: #b91c1c; border-color: #b91c1c; }
-.actions .delete:hover { background: #b91c1c; color: #fff; }
+.actions .edit { background: #fff; color: var(--royal-blue); }
+.actions .edit:hover { background: var(--royal-blue); color: #fff; }
+.actions .delete,
+button.delete { background: #fff; color: var(--red); border-color: var(--red); }
+.actions .delete:hover,
+button.delete:hover { background: var(--red); color: #fff; border-color: var(--red); }
+.actions .reval { background: var(--grey-600); border-color: var(--grey-600); }
+.actions .reval:hover { background: var(--grey-800); border-color: var(--grey-800); }
 
-/* Edit pop-up */
+/* Re-validation checkboxes */
+td form label { display: inline-block; margin-right: 10px; font-size: 13px; color: var(--grey-600); }
+
+/* ---------- Edit pop-up ---------- */
 dialog {
-    border: 1px solid #e5e5e5;
-    border-radius: 6px;
+    border: 0;
+    border-top: 5px solid var(--royal-blue);
+    border-radius: 10px;
     padding: 22px;
     width: min(380px, 92vw);
+    box-shadow: 0 20px 50px rgba(31, 58, 147, .3);
 }
-dialog::backdrop { background: rgba(0, 0, 0, .35); }
-dialog h3 { margin: 0 0 10px; font-size: 16px; font-weight: 600; }
+dialog::backdrop { background: rgba(45, 49, 58, .5); }
+dialog h3 { margin: 0 0 10px; font-size: 18px; font-weight: 700; color: var(--royal-blue); }
 dialog form { display: grid; gap: 6px; }
-dialog label {
-    font-size: 12px;
-    text-transform: uppercase;
-    letter-spacing: .5px;
-    color: #777;
-    margin-top: 6px;
-}
-dialog input {
-    padding: 8px 10px;
-    border: 1px solid #ddd;
-    border-radius: 4px;
-    font-size: 14px;
-    width: 100%;
-}
-dialog input:focus { outline: none; border-color: #222; }
-dialog input[readonly] { background: #fafafa; color: #777; }
 dialog .form-action { display: flex; gap: 8px; margin-top: 12px; }
+dialog.wide { width: min(700px, 95vw); }
+dialog { max-height: 92vh; overflow-y: auto; }
+
+/* Checkbox / radio rows inside pop-ups (Re-validation) */
+dialog label.check {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-top: 4px;
+    font-size: 14px;
+    font-weight: 500;
+    text-transform: none;
+    letter-spacing: 0;
+    color: var(--grey-800);
+    cursor: pointer;
+}
+dialog .radio-row { display: flex; gap: 18px; }
+dialog input[type="checkbox"],
+dialog input[type="radio"] { width: 16px; height: 16px; margin: 0; }
+
+/* Card scan status in the confirm pop-up */
+dialog .status { margin: 0; }
+dialog #cvWho { margin: 0 0 8px; font-weight: 600; color: var(--grey-600); }
+
+/* Review & Confirm button in the waiting list */
+.actions .review { background: var(--royal-blue); }
+
 .form-error {
     margin: 0 0 6px;
     padding: 8px 10px;
-    border: 1px solid #b91c1c;
-    border-radius: 4px;
-    color: #b91c1c;
+    border: 1px solid var(--red);
+    border-radius: 6px;
+    background: #fdeaea;
+    color: var(--red);
     font-size: 13px;
 }
 .form-error:empty { display: none; }
+
+/* ---------- Two columns (Recent Activity) ---------- */
+.two-col { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; }
+.two-col > div { min-width: 0; }
+@media (max-width: 800px) {
+    .two-col { grid-template-columns: 1fr; }
+    header   { padding: 14px 16px; }
+    main     { padding: 16px; }
+}

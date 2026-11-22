@@ -1,8 +1,14 @@
+<?php
+session_start();
+if (isset($_SESSION['admin_id'])) { header('Location: admin.php'); exit; }
+?>
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+     <link rel="stylesheet" href="login.css">
     <title>Log In</title>
 </head>
 <body>

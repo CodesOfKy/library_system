@@ -1,3 +1,5 @@
+<html><link rel="stylesheet" href="register.css"> </html>
+
 <?php
 mysqli_report(MYSQLI_REPORT_OFF);
 $conn = new mysqli("localhost", "root", "", "arduino_db");
@@ -93,8 +95,12 @@ if ($conn->connect_error) {
             $stmt->bind_param("ssssssssss", $student_id, $first, $middle, $last, $full, $uid, $level, $grade, $course, $section);
 
             if ($stmt->execute()) {
-                $success = "Registered successfully, " . $full . "!";
-                $first = $middle = $last = $student_id = $level = $grade = $course = $section = "";   // clear the form
+                 echo "<script>
+        alert('Registered successfully, " . addslashes($full) . "!');
+        window.location.href = 'library.php';
+    </script>";
+    exit();
+                // clear the form
             } elseif ($stmt->errno == 1062) {
                 $errors[] = "This student, student number, or RFID card is already registered.";
             } else {

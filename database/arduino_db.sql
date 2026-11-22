@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: Nov 14, 2026 at 07:37 AM
+-- Generation Time: Nov 19, 2026 at 08:46 AM
 -- Server version: 10.4.32-MariaDB
 -- PHP Version: 8.2.12
 
@@ -39,6 +39,20 @@ CREATE TABLE `admins` (
 
 INSERT INTO `admins` (`id`, `email`, `password`) VALUES
 (1, 'admin@gmail.com', '$2y$10$Xb/IcQHmPC1u8/FWMBxcj.nCtOHjL1665OdmvbvbH52GA.QtlODtG');
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `audit_log`
+--
+
+CREATE TABLE `audit_log` (
+  `id` int(11) NOT NULL,
+  `admin_email` varchar(100) NOT NULL,
+  `action` varchar(30) NOT NULL,
+  `details` varchar(255) NOT NULL,
+  `created_at` datetime NOT NULL DEFAULT current_timestamp()
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 -- --------------------------------------------------------
 
@@ -211,6 +225,22 @@ INSERT INTO `options` (`id`, `kind`, `level`, `name`) VALUES
 -- --------------------------------------------------------
 
 --
+-- Table structure for table `revalidations`
+--
+
+CREATE TABLE `revalidations` (
+  `id` int(11) NOT NULL,
+  `student_id` varchar(20) NOT NULL,
+  `reason` varchar(255) NOT NULL,
+  `status` enum('pending','confirmed','cancelled') NOT NULL DEFAULT 'pending',
+  `docs_checked` varchar(255) NOT NULL DEFAULT '',
+  `requested_at` datetime NOT NULL DEFAULT current_timestamp(),
+  `confirmed_at` datetime DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+-- --------------------------------------------------------
+
+--
 -- Table structure for table `rfid_logs`
 --
 
@@ -301,6 +331,12 @@ ALTER TABLE `admins`
   ADD UNIQUE KEY `email` (`email`);
 
 --
+-- Indexes for table `audit_log`
+--
+ALTER TABLE `audit_log`
+  ADD PRIMARY KEY (`id`);
+
+--
 -- Indexes for table `books`
 --
 ALTER TABLE `books`
@@ -342,6 +378,12 @@ ALTER TABLE `options`
   ADD UNIQUE KEY `kind` (`kind`,`level`,`name`);
 
 --
+-- Indexes for table `revalidations`
+--
+ALTER TABLE `revalidations`
+  ADD PRIMARY KEY (`id`);
+
+--
 -- Indexes for table `rfid_logs`
 --
 ALTER TABLE `rfid_logs`
@@ -380,6 +422,12 @@ ALTER TABLE `admins`
   MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
 
 --
+-- AUTO_INCREMENT for table `audit_log`
+--
+ALTER TABLE `audit_log`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
+
+--
 -- AUTO_INCREMENT for table `books`
 --
 ALTER TABLE `books`
@@ -414,6 +462,12 @@ ALTER TABLE `library_out`
 --
 ALTER TABLE `options`
   MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=11;
+
+--
+-- AUTO_INCREMENT for table `revalidations`
+--
+ALTER TABLE `revalidations`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
 
 --
 -- AUTO_INCREMENT for table `rfid_logs`

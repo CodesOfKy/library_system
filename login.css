@@ -1,0 +1,154 @@
+/* =========================================================
+   login.css - styles for login.php
+   Theme: royal blue + grey
+   Link it inside <head> of login.php:
+   <link rel="stylesheet" href="login.css">
+   ========================================================= */
+
+:root {
+    --royal-blue:       #4169e1;
+    --royal-blue-dark:  #2f52c4;
+    --royal-blue-deep:  #1f3a93;
+    --royal-blue-tint:  #e8edfc;
+
+    --grey-50:  #f5f6f8;
+    --grey-100: #eceef2;
+    --grey-200: #d9dce3;
+    --grey-400: #9aa1ae;
+    --grey-600: #5b6270;
+    --grey-800: #2d313a;
+}
+
+* { box-sizing: border-box; }
+
+/* ---------- Page ---------- */
+body {
+    margin: 0;
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 24px 16px;
+    font-family: "Segoe UI", Roboto, Arial, sans-serif;
+    color: var(--grey-800);
+    background:
+        linear-gradient(160deg, var(--grey-100) 0%, var(--grey-200) 100%);
+}
+
+/* ---------- Card ---------- */
+#loginForm {
+    width: 100%;
+    max-width: 400px;
+    background: #fff;
+    border-radius: 12px;
+    border-top: 6px solid var(--royal-blue);
+    box-shadow: 0 10px 30px rgba(31, 58, 147, .15),
+                0 2px 6px rgba(45, 49, 58, .08);
+    overflow: hidden;
+}
+
+#loginForm .form {
+    padding: 32px 32px 8px;
+}
+
+/* ---------- Heading ---------- */
+#loginForm h3 {
+    margin: 0 0 20px;
+    text-align: center;
+    font-size: 26px;
+    font-weight: 700;
+    letter-spacing: .3px;
+    color: var(--royal-blue);
+}
+
+/* ---------- Error / status message ---------- */
+#message {
+    min-height: 20px;
+    margin: 0 0 8px;
+    text-align: center;
+    font-size: 14px;
+    font-weight: 600;
+    color: #c62828 !important; /* overrides the inline red in login.php */
+}
+
+#message:empty { min-height: 0; margin: 0; }
+
+/* ---------- Fields ---------- */
+#loginForm label {
+    display: block;
+    margin-top: 16px;
+    margin-bottom: 6px;
+    font-size: 14px;
+    font-weight: 600;
+    color: var(--grey-600);
+}
+
+#loginForm input[type="email"],
+#loginForm input[type="password"] {
+    width: 100%;
+    padding: 12px 14px;
+    font-size: 16px;
+    color: var(--grey-800);
+    background: var(--grey-50);
+    border: 1.5px solid var(--grey-200);
+    border-radius: 8px;
+    outline: none;
+    transition: border-color .15s, box-shadow .15s, background .15s;
+}
+
+#loginForm input::placeholder { color: var(--grey-400); }
+
+#loginForm input:hover { border-color: var(--grey-400); }
+
+#loginForm input:focus {
+    background: #fff;
+    border-color: var(--royal-blue);
+    box-shadow: 0 0 0 3px rgba(65, 105, 225, .2);
+}
+
+/* ---------- Button ---------- */
+#loginForm .button {
+    padding: 20px 32px 32px;
+}
+
+#loginForm button {
+    width: 100%;
+    padding: 13px;
+    font-size: 16px;
+    font-weight: 700;
+    letter-spacing: .4px;
+    color: #fff;
+    background: var(--royal-blue);
+    border: 0;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: background .15s, transform .05s, box-shadow .15s;
+}
+
+#loginForm button:hover {
+    background: var(--royal-blue-dark);
+    box-shadow: 0 4px 12px rgba(65, 105, 225, .35);
+}
+
+#loginForm button:active {
+    background: var(--royal-blue-deep);
+    transform: translateY(1px);
+}
+
+#loginForm button:focus-visible {
+    outline: 3px solid var(--royal-blue-tint);
+    outline-offset: 2px;
+}
+
+#loginForm button:disabled {
+    background: var(--grey-400);
+    box-shadow: none;
+    cursor: not-allowed;
+}
+
+/* ---------- Small screens ---------- */
+@media (max-width: 440px) {
+    #loginForm .form   { padding: 24px 20px 4px; }
+    #loginForm .button { padding: 16px 20px 24px; }
+    #loginForm h3      { font-size: 22px; }
+}
