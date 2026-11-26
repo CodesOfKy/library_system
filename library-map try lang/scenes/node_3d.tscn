@@ -1,0 +1,951 @@
+[gd_scene format=3 uid="uid://6sgjk7ruqldr"]
+
+[ext_resource type="Script" uid="uid://b22mc1643ama1" path="res://scripts/node_3d.gd" id="1_ns6u7"]
+[ext_resource type="PackedScene" uid="uid://cg2xrpk6tp73x" path="res://ass/LIBRARY.glb" id="1_tyffc"]
+[ext_resource type="Texture2D" uid="uid://dv8qhs5q8wmn" path="res://ass/images (5).jpg" id="3_5t4e2"]
+[ext_resource type="Texture2D" uid="uid://cxb6nde0w704b" path="res://ass/images (6).jpg" id="4_oqwcg"]
+[ext_resource type="PackedScene" uid="uid://bq3x7aaruwf1y" path="res://ass/arrow.glb" id="4_xvgsr"]
+[ext_resource type="Texture2D" uid="uid://dorblyedut5we" path="res://ass/yellow_bg.png" id="6_a6664"]
+[ext_resource type="Script" uid="uid://d24mbdf513jp1" path="res://scripts/path_to_section_1.gd" id="7_10v3s"]
+
+[sub_resource type="ProceduralSkyMaterial" id="ProceduralSkyMaterial_5t4e2"]
+sky_horizon_color = Color(0.66224277, 0.6717428, 0.6867428, 1)
+ground_horizon_color = Color(0.66224277, 0.6717428, 0.6867428, 1)
+
+[sub_resource type="Sky" id="Sky_xvgsr"]
+sky_material = SubResource("ProceduralSkyMaterial_5t4e2")
+
+[sub_resource type="Environment" id="Environment_oqwcg"]
+background_mode = 2
+sky = SubResource("Sky_xvgsr")
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_pcc1d"]
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_yyghn"]
+size = Vector3(1.0418701, 1, 1)
+
+[sub_resource type="Curve3D" id="Curve3D_10v3s"]
+_data = {
+"points": PackedVector3Array(0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, -0.16, 0, 0, 0, -4.61, 0.135, -0.38),
+"tilts": PackedFloat32Array(0, 0)
+}
+point_count = 2
+
+[sub_resource type="CapsuleMesh" id="CapsuleMesh_10v3s"]
+height = 3.4072266
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_area1"]
+size = Vector3(0.36, 0.44, 1.02)
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_area2"]
+size = Vector3(0.36, 0.18, 0.46)
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_area3"]
+size = Vector3(0.36, 1.21, 0.46)
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_area4"]
+size = Vector3(0.36, 1.48, 0.46)
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_area5"]
+size = Vector3(0.36, 1.48, 0.46)
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_area6"]
+size = Vector3(0.36, 1.22, 0.46)
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_area7"]
+size = Vector3(0.36, 0.26, 0.56)
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_area8"]
+size = Vector3(0.36, 1.48, 1.02)
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_area9"]
+size = Vector3(0.36, 1.48, 2.14)
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_area10"]
+size = Vector3(1.01, 1.21, 0.36)
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_area11"]
+size = Vector3(1.02, 1.22, 0.36)
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_area12"]
+size = Vector3(1.1, 1.48, 0.36)
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_area13"]
+size = Vector3(1.1, 0.27, 0.36)
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_area14"]
+size = Vector3(0.36, 1.48, 1.02)
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_area15"]
+size = Vector3(0.36, 1.48, 1.02)
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_area16"]
+size = Vector3(0.36, 1.05, 1.01)
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_area17"]
+size = Vector3(0.36, 0.43, 1.01)
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_area18"]
+size = Vector3(0.36, 0.18, 0.5)
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_area19"]
+size = Vector3(0.36, 0.18, 0.16)
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_area20"]
+size = Vector3(0.36, 0.18, 0.48)
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_area21"]
+size = Vector3(0.36, 0.18, 0.46)
+
+[sub_resource type="Curve3D" id="Curve3D_sec2"]
+_data = {
+"points": PackedVector3Array(0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, -2.599, 0.081, -0.74, 0, 0, 0, 0, 0, 0, -4.599, 0.081, -1.59),
+"tilts": PackedFloat32Array(0, 0, 0)
+}
+point_count = 3
+
+[sub_resource type="Curve3D" id="Curve3D_sec3"]
+_data = {
+"points": PackedVector3Array(0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, -1.6794432, 0.081, -0.0811249, 0, 0, 0, 0, 0, 0, -2.2066612, 0.081, -5.6765814, 0, 0, 0, 0, 0, 0, -4.9516907, 0.081, -5.8899994, 0, 0, 0, 0, 0, 0, -4.999, 0.081, -3.59),
+"tilts": PackedFloat32Array(0, 0, 0, 0, 0)
+}
+point_count = 5
+
+[sub_resource type="Curve3D" id="Curve3D_sec4"]
+_data = {
+"points": PackedVector3Array(0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, -1.7985387, 0.081, 0.052564144, 0, 0, 0, 0, 0, 0, -2.2342155, 0.081, -5.791316, 0, 0, 0, 0, 0, 0, -4.999, 0.081, -5.89, 0, 0, 0, 0, 0, 0, -4.999, 0.081, -6.44),
+"tilts": PackedFloat32Array(0, 0, 0, 0, 0)
+}
+point_count = 5
+
+[sub_resource type="Curve3D" id="Curve3D_sec5"]
+_data = {
+"points": PackedVector3Array(0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, -1.6728511, 0.081, 0.1668452, 0, 0, 0, 0, 0, 0, -2.31571, 0.31936514, -2.5510774, 0, 0, 0, 0, 0, 0, -2.2338843, 0.081, -5.784278, 0, 0, 0, 0, 0, 0, -4.999, 0.081, -5.7978067, 0, 0, 0, 0, 0, 0, -4.773252, 0.081, -9.956187),
+"tilts": PackedFloat32Array(0, 0, 0, 0, 0, 0)
+}
+point_count = 6
+
+[sub_resource type="Curve3D" id="Curve3D_sec6"]
+_data = {
+"points": PackedVector3Array(0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, -1.856, 0.111, 0.005, 0, 0, 0, 0, 0, 0, -1.7309316, 0.081, -2.6134737, 0, 0, 0, 0, 0, 0, -0.7, 0, -2.58, 0, 0, 0, 0, 0, 0, -0.68, 0, -7.225),
+"tilts": PackedFloat32Array(0, 0, 0, 0, 0)
+}
+point_count = 5
+
+[node name="Node3D" type="Node3D" unique_id=2136571941]
+script = ExtResource("1_ns6u7")
+
+[node name="WorldEnvironment" type="WorldEnvironment" parent="." unique_id=1219761501]
+environment = SubResource("Environment_oqwcg")
+
+[node name="LIBRARY" parent="." unique_id=905289834 instance=ExtResource("1_tyffc")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.058447957, -0.008121967, -0.5617677)
+
+[node name="table_collisions" type="Area3D" parent="." unique_id=1370009416]
+
+[node name="table1" type="CollisionShape3D" parent="table_collisions" unique_id=832454663]
+transform = Transform3D(0.93, 0, 0, 0, 0.535, 0, 0, 0, 2.335, 0.06827605, 0.22940552, -2.5444522)
+shape = SubResource("BoxShape3D_pcc1d")
+debug_color = Color(0, 0.5294118, 0.61960787, 1)
+
+[node name="table4" type="CollisionShape3D" parent="table_collisions/table1" unique_id=1889493384]
+transform = Transform3D(0.9999997, 0, 0, 0, 0.99999946, 0, 0, 0, 0.9999995, -1.4821892, 0, -1.4464322)
+shape = SubResource("BoxShape3D_pcc1d")
+debug_color = Color(0, 0.5294118, 0.61960787, 1)
+
+[node name="table3" type="CollisionShape3D" parent="table_collisions/table1" unique_id=1037117672]
+transform = Transform3D(0.99999994, 0, 0, 0, 0.99999994, 0, 0, 0, 0.99999994, -1.5062118, 0, 0)
+shape = SubResource("BoxShape3D_pcc1d")
+debug_color = Color(0, 0.5294118, 0.61960787, 1)
+
+[node name="table2" type="CollisionShape3D" parent="table_collisions/table1" unique_id=324338812]
+transform = Transform3D(0.99999994, 0, 0, 0, 0.99999994, 0, 0, 0, 0.99999994, -0.090645455, 0, -1.4675728)
+shape = SubResource("BoxShape3D_pcc1d")
+debug_color = Color(0, 0.5294118, 0.61960787, 1)
+
+[node name="table5" type="CollisionShape3D" parent="table_collisions/table1" unique_id=350751165]
+transform = Transform3D(0.99999994, 0, 0, 0, 0.99999994, 0, 0, 0, 0.99999994, -2.959399, 0, 0)
+shape = SubResource("BoxShape3D_pcc1d")
+debug_color = Color(0, 0.5294118, 0.61960787, 1)
+
+[node name="table6" type="CollisionShape3D" parent="table_collisions/table1" unique_id=481131147]
+transform = Transform3D(0.9999997, 0, 0, 0, 0.99999946, 0, 0, 0, 0.9999995, -2.9353764, 0, -1.4464322)
+shape = SubResource("BoxShape3D_pcc1d")
+debug_color = Color(0, 0.5294118, 0.61960787, 1)
+
+[node name="default_camera" type="Camera3D" parent="." unique_id=287020341]
+transform = Transform3D(0.05102275, -0.59548104, 0.80174756, 0.006458954, 0.80297315, 0.5959803, -0.99867666, -0.025230102, 0.04481608, -0.83685005, 2.0671237, -3.6383533)
+
+[node name="Button" type="Button" parent="default_camera" unique_id=696890744]
+offset_left = 1008.0
+offset_top = 606.0
+offset_right = 1138.0
+offset_bottom = 630.0
+text = "track
+"
+
+[node name="hide" type="Button" parent="default_camera" unique_id=547092780]
+visible = false
+offset_left = 72.0
+offset_top = 408.0
+offset_right = 188.0
+offset_bottom = 438.0
+text = "hide
+"
+
+[node name="show" type="Button" parent="default_camera" unique_id=479316087]
+offset_left = 67.0
+offset_top = 618.0
+offset_right = 183.0
+offset_bottom = 649.0
+text = "shoew
+
+"
+
+[node name="genre_selected" type="Sprite2D" parent="default_camera" unique_id=755687624]
+visible = false
+modulate = Color(1, 1, 1, 0.39215687)
+position = Vector2(601, 34.125027)
+scale = Vector2(1.0094044, 0.16197903)
+texture = ExtResource("4_oqwcg")
+
+[node name="genre_bg" type="Sprite2D" parent="default_camera" unique_id=1124706721]
+modulate = Color(1, 1, 1, 0.39215687)
+position = Vector2(601, 34.125027)
+scale = Vector2(1.0094044, 0.16197903)
+texture = ExtResource("3_5t4e2")
+
+[node name="Sprite2D" type="Sprite2D" parent="default_camera" unique_id=1072247570]
+visible = false
+modulate = Color(1, 1, 1, 0.49803922)
+position = Vector2(-25, 648)
+scale = Vector2(1, 0.95625)
+texture = ExtResource("3_5t4e2")
+
+[node name="genre" type="Label" parent="default_camera" unique_id=31425152]
+texture_filter = 1
+offset_left = 337.0
+offset_top = -1.0
+offset_right = 831.0
+offset_bottom = 76.0
+theme_override_font_sizes/font_size = 46
+horizontal_alignment = 1
+uppercase = true
+
+[node name="genre_bg2" type="Sprite2D" parent="default_camera" unique_id=1156306355]
+modulate = Color(1, 1, 1, 0.39215687)
+position = Vector2(610, 641.06256)
+scale = Vector2(1.2037617, 0.1747396)
+texture = ExtResource("3_5t4e2")
+
+[node name="Label" type="Label" parent="default_camera" unique_id=2068113012]
+visible = false
+offset_left = 4.0
+offset_top = 438.0
+offset_right = 44.0
+offset_bottom = 461.0
+
+[node name="Label2" type="Label" parent="default_camera" unique_id=405872386]
+offset_left = 255.0
+offset_top = 613.0
+offset_right = 984.0
+offset_bottom = 714.0
+text = "w - top down view 		         s - default cam			                          r - reset 				                           a & s - rotate cam"
+
+[node name="top_down_camera" type="Camera3D" parent="." unique_id=1198538646]
+transform = Transform3D(0.019782426, -0.99708366, 0.0737082, 0.003310237, 0.07378754, 0.9972685, -0.9997989, -0.019484399, 0.00476028, -0.7402247, 5.964713, -3.1736007)
+
+[node name="OmniLight3D" type="OmniLight3D" parent="." unique_id=1199207214]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -1, 3.885206, -3.768411)
+light_color = Color(1, 1, 0.8352941, 1)
+light_energy = 1.698
+light_indirect_energy = 4.174
+light_volumetric_fog_energy = 1.571
+light_size = 0.123
+light_specular = 0.655
+shadow_enabled = true
+shadow_bias = 0.0
+shadow_normal_bias = 2.627
+shadow_transmittance_bias = 11.86
+shadow_blur = 1.11
+omni_range = 12.19
+omni_attenuation = 1.135
+
+[node name="Philosophy" type="Area3D" parent="." unique_id=1393077276]
+
+[node name="philo_collision" type="CollisionShape3D" parent="Philosophy" unique_id=661221933]
+transform = Transform3D(0.385, 0, 0, 0, 0.66, 0, 0, 0, 0.845, -3.8639557, 1.1750396, 2.2564535)
+shape = SubResource("BoxShape3D_yyghn")
+debug_color = Color(0, 0, 0, 1)
+
+[node name="philo_marker" type="Sprite3D" parent="Philosophy" unique_id=1270232232]
+transform = Transform3D(0.0013121477, -4.4218345e-05, 0.999949, 0.1299767, 0.0024819276, -0.010087582, -0.0020811365, 0.15498012, 0.00044684915, -3.795452, 1.1223063, 2.097698)
+visible = false
+texture = ExtResource("4_oqwcg")
+
+[node name="section1_cam" type="Camera3D" parent="." unique_id=772912511]
+transform = Transform3D(-0.014795848, 0, 0.99989057, 0, 1, 0, -0.99989057, 0, -0.014795848, -1.3420727, 0.78308606, 0.737785)
+
+[node name="Psychology" type="Area3D" parent="." unique_id=1357478604]
+
+[node name="psych_collision" type="CollisionShape3D" parent="Psychology" unique_id=1381057855]
+transform = Transform3D(0.385, 0, 0, 0, 0.66, 0, 0, 0, 0.845, -3.8639557, 0.4164747, 2.2564535)
+visible = false
+shape = SubResource("BoxShape3D_yyghn")
+debug_color = Color(0, 0, 0, 1)
+
+[node name="psych_marker" type="Sprite3D" parent="Psychology" unique_id=741886405]
+transform = Transform3D(0.0013121477, -4.4218345e-05, 0.999949, 0.1299767, 0.0024819276, -0.010087582, -0.0020811365, 0.15498012, 0.00044684915, -3.8037953, 0.29584712, 2.110931)
+visible = false
+texture = ExtResource("4_oqwcg")
+
+[node name="Education" type="Area3D" parent="." unique_id=894710756]
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Education" unique_id=1550825993]
+transform = Transform3D(0.33999792, 1.772862e-05, 0.001902379, 1.1711094e-12, 0.96998674, -0.0028536008, -0.0011868216, 0.0050788545, 0.5449892, -3.8639557, 1.0410448, 1.530829)
+shape = SubResource("BoxShape3D_yyghn")
+debug_color = Color(0, 0, 0, 1)
+
+[node name="educ_marker" type="Sprite3D" parent="Education" unique_id=1414282035]
+transform = Transform3D(0.0015644844, -3.7086345e-05, 0.999949, 0.15497224, 0.0020816165, -0.010087586, -0.002481355, 0.12998332, 0.00044684915, -3.7966993, 0.9736018, 1.5321333)
+visible = false
+texture = ExtResource("4_oqwcg")
+
+[node name="sec1_highlight" type="Sprite3D" parent="." unique_id=2071603377]
+transform = Transform3D(-7.767408e-05, 0, 1.0999999, 0, 0.145, 0, -0.13499998, 0, -0.00063290005, -3.792504, 0.69505465, 0.9985381)
+visible = false
+texture = ExtResource("6_a6664")
+
+[node name="Science" type="Area3D" parent="." unique_id=1324734948]
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Science" unique_id=297078198]
+transform = Transform3D(0.33999795, 1.5078462e-05, 0.0019023789, 0, 0.82498866, -0.0028536005, -0.0011868215, 0.004319644, 0.5449892, -3.8639731, 0.097468376, 1.5258884)
+shape = SubResource("BoxShape3D_yyghn")
+debug_color = Color(0, 0, 0, 1)
+
+[node name="sci_marker" type="Sprite3D" parent="Science" unique_id=450033770]
+transform = Transform3D(0.00053011655, 0.0005078986, 0.3399953, 0.12799707, 0.0008333351, -0.0014140225, -0.00068548584, 0.15599695, -0.0010994112, -3.8158984, 0.0975017, 1.5529311)
+visible = false
+texture = ExtResource("4_oqwcg")
+
+[node name="English" type="Area3D" parent="." unique_id=1352727915]
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="English" unique_id=1324991130]
+transform = Transform3D(0.33999795, 2.2389237e-05, 0.0035604155, 0, 1.2249832, -0.0053406837, -0.0011868215, 0.0064140176, 1.0199798, -3.8668077, 0.8753189, 0.71390545)
+shape = SubResource("BoxShape3D_yyghn")
+debug_color = Color(0, 0, 0, 1)
+
+[node name="eng_marker" type="Sprite3D" parent="English" unique_id=1514928054]
+transform = Transform3D(0.00082002394, 0.0011102143, 0.3399953, 0.19799547, 0.001821585, -0.0014140225, -0.0010603608, 0.34099331, -0.0010994112, -3.8155353, 0.83085775, 0.7220914)
+visible = false
+texture = ExtResource("4_oqwcg")
+
+[node name="eng_marker2" type="Sprite3D" parent="English/eng_marker" unique_id=839099884]
+transform = Transform3D(0.6212122, 9.778887e-09, -3.7471182e-10, -4.1909516e-09, 0.4868036, -8.8432804e-05, -7.730705e-12, 4.330254e-05, 0.99999994, -5.4975896, 0.664516, 5.9127808e-05)
+texture = ExtResource("4_oqwcg")
+
+[node name="CollisionShape3D2" type="CollisionShape3D" parent="English" unique_id=1810830715]
+transform = Transform3D(0.33999795, 7.67631e-06, 0.0019198321, 0, 0.41999424, -0.0028797805, -0.0011868216, 0.0021990917, 0.5499891, -3.8659313, 0.20018417, 0.9649991)
+shape = SubResource("BoxShape3D_yyghn")
+debug_color = Color(0, 0, 0, 1)
+
+[node name="Law" type="Area3D" parent="." unique_id=342201983]
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Law" unique_id=1167802779]
+transform = Transform3D(0.33999795, 2.7689539e-05, 0.0019023789, 0, 1.5149792, -0.0028536005, -0.0011868215, 0.007932438, 0.5449892, -3.8697171, 0.7368146, -0.119583994)
+shape = SubResource("BoxShape3D_yyghn")
+debug_color = Color(0, 0, 0, 1)
+
+[node name="law_marker" type="Sprite3D" parent="Law" unique_id=301485090]
+transform = Transform3D(0.0011099316, 0.0005078986, 0.33999527, 0.2679939, 0.00083333516, -0.0014140223, -0.001435236, 0.15599693, -0.0010994109, -3.8190508, 0.6741454, -0.16359079)
+visible = false
+texture = ExtResource("4_oqwcg")
+
+[node name="law_marker2" type="Sprite3D" parent="Law/law_marker" unique_id=1873903387]
+transform = Transform3D(0.4776119, -6.9849193e-10, -2.5283953e-10, -9.313226e-10, 1.0000001, -9.313226e-10, 4.0472514e-11, -2.3283064e-10, 1, -3.3800764, 3.7053545, 9.536743e-07)
+texture = ExtResource("4_oqwcg")
+
+[node name="CollisionShape3D2" type="CollisionShape3D" parent="Law" unique_id=1012358306]
+transform = Transform3D(0.33999795, 7.0366154e-06, 0.0019023789, 0, 0.38499472, -0.0028536005, -0.0011868215, 0.002015834, 0.5449892, -3.8678772, 0.05320473, 0.40750137)
+shape = SubResource("BoxShape3D_yyghn")
+debug_color = Color(0, 0, 0, 1)
+
+[node name="CollisionShape3D3" type="CollisionShape3D" parent="Law" unique_id=2063690214]
+transform = Transform3D(0.3149981, 2.018705e-05, 0.00090739806, -0.0010993496, 0.011180491, 0.2599851, -5.360395e-06, -1.1049434, 0.002630704, -3.8697171, 1.3790205, -1.4572579)
+shape = SubResource("BoxShape3D_yyghn")
+debug_color = Color(0, 0, 0, 1)
+
+[node name="law_marker2" type="Sprite3D" parent="Law" unique_id=876811706]
+transform = Transform3D(0.0023736462, 0.0003573763, 0.2539795, 0.0047153817, 0.11196589, -0.0008866255, -0.1929278, 0.0027409748, 0.0031031133, -3.7480097, 1.5090029, -1.445999)
+visible = false
+texture = ExtResource("4_oqwcg")
+
+[node name="section2_cam" type="Camera3D" parent="." unique_id=650264890]
+transform = Transform3D(-0.92059827, -0.1774789, 0.3478509, 0, 0.8907578, 0.45447838, -0.3905112, 0.41839197, -0.82003003, -1.3689747, 1.0661682, -2.06604)
+
+[node name="Miscellaneous" type="Area3D" parent="." unique_id=1048674923]
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Miscellaneous" unique_id=596566064]
+transform = Transform3D(2.2749863, 1.7911389e-05, 0.0007504797, 0, 0.9799866, -0.0011257324, -0.007941232, 0.005131215, 0.21499574, -3.0006263, 0.382034, -0.6229844)
+shape = SubResource("BoxShape3D_yyghn")
+debug_color = Color(0, 0, 0, 1)
+
+[node name="mis_marker" type="Sprite3D" parent="Miscellaneous" unique_id=530351485]
+transform = Transform3D(0.0005094103, -0.49598768, -0.0034552626, 0.12299719, 0.0020389738, 0.0032542767, -0.00065870903, -0.0028437283, 0.6049814, -2.8025348, 0.46835256, -0.471175)
+visible = false
+texture = ExtResource("4_oqwcg")
+
+[node name="sec2_highlight" type="Sprite3D" parent="." unique_id=1459313766]
+transform = Transform3D(0.12, 0, 0, 0, 0.09, 0, 0, 0, 1, -3, 0.38, -0.76)
+visible = false
+texture = ExtResource("6_a6664")
+
+[node name="entrance_position" type="Marker3D" parent="." unique_id=670928648]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1.1511923, 0.5081639, 1.6134794)
+gizmo_extents = 0.11
+
+[node name="Path_To_Section_1" type="Path3D" parent="." unique_id=999547652]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1.5994976, 0.369246, 1.6398327)
+visible = false
+curve = SubResource("Curve3D_10v3s")
+
+[node name="PathFollow3D" type="PathFollow3D" parent="Path_To_Section_1" unique_id=1772712335]
+transform = Transform3D(0.098286435, 0.028937066, 0.9947369, 0.0005287174, 0.9995753, -0.02913004, -0.99515796, 0.003389024, 0.09822938, -2.4047596, 0.07042139, -0.25990346)
+progress = 2.4198084
+script = ExtResource("7_10v3s")
+
+[node name="arrow" parent="Path_To_Section_1/PathFollow3D" unique_id=1743766843 instance=ExtResource("4_xvgsr")]
+transform = Transform3D(0.06497543, 1.2716945e-05, 0.0017867312, -2.4435358e-05, 0.06499861, 0.00042598185, -0.0017866082, -0.00042649248, 0.064974055, -0.039694667, 0.3218142, -0.05141735)
+
+[node name="MeshInstance3D" type="MeshInstance3D" parent="Path_To_Section_1/PathFollow3D" unique_id=1624609076]
+transform = Transform3D(0.3105847, -0.05462174, -0.054347217, 0.053879466, -0.007395848, 0.31534475, -0.055083197, -0.31521696, 0.0020186054, 0, 0.43531096, 0.0018199682)
+visible = false
+mesh = SubResource("CapsuleMesh_10v3s")
+
+[node name="Miscellaneous2" type="Area3D" parent="." unique_id=180046551]
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Miscellaneous2" unique_id=1797653820]
+transform = Transform3D(1.5, 0, 0, 0, 0.725, 0, 0, 0, 0.645, -4.506818, 0.8569549, -1.1289998)
+shape = SubResource("BoxShape3D_yyghn")
+debug_color = Color(0, 0, 0, 1)
+
+[node name="mis_marker" type="Sprite3D" parent="Miscellaneous2" unique_id=1915506939]
+transform = Transform3D(0.0005094103, -0.49598768, -0.0034552626, 0.12299719, 0.0020389738, 0.0032542767, -0.00065870903, -0.0028437283, 0.6049814, -2.8025348, 0.46835256, -0.471175)
+visible = false
+texture = ExtResource("4_oqwcg")
+
+[node name="Filipino" type="Area3D" parent="." unique_id=2035090581]
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Filipino" unique_id=1646279676]
+transform = Transform3D(0.17499942, -0.0004155046, 0.0013904737, 0.00010460574, 0.70499605, -0.0017864322, -0.00044614368, 0.0023119533, 0.54499537, -3.86906, 0.82755876, -1.2402512)
+shape = SubResource("BoxShape3D_yyghn")
+debug_color = Color(0, 0, 0, 1)
+
+[node name="fil_marker" type="Sprite3D" parent="Filipino" unique_id=1220736136]
+transform = Transform3D(0.0015644844, -3.7086345e-05, 0.999949, 0.15497224, 0.0020816165, -0.010087586, -0.002481355, 0.12998332, 0.00044684915, -3.7966993, 0.7143123, -1.1784194)
+visible = false
+texture = ExtResource("4_oqwcg")
+
+[node name="Genre" type="Area3D" parent="." unique_id=2007246755]
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Genre" unique_id=1131822896]
+transform = Transform3D(0.17499942, -0.0004155046, 0.0013904737, 0.00010460574, 0.70499605, -0.0017864322, -0.00044614368, 0.0023119533, 0.54499537, -3.8672101, 0.82755876, -1.7318429)
+shape = SubResource("BoxShape3D_yyghn")
+debug_color = Color(0, 0, 0, 1)
+
+[node name="genre_marker" type="Sprite3D" parent="Genre" unique_id=1422589869]
+transform = Transform3D(0.0015644844, -3.7086345e-05, 0.999949, 0.15497224, 0.0020816165, -0.010087586, -0.002481355, 0.12998332, 0.00044684915, -3.7966993, 0.7143123, -1.743458)
+visible = false
+texture = ExtResource("4_oqwcg")
+
+[node name="Math" type="Area3D" parent="." unique_id=1675552296]
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Math" unique_id=1101408793]
+transform = Transform3D(0.33999792, 2.2389235e-05, 0.0035604152, 2.1317182e-06, -1.224993, 0.0035086316, 0.0011868197, -0.0042137457, -1.0199877, -3.8668077, 0.5808855, -2.5066154)
+shape = SubResource("BoxShape3D_yyghn")
+debug_color = Color(0, 0, 0, 1)
+
+[node name="math_marker" type="Sprite3D" parent="Math" unique_id=150815982]
+transform = Transform3D(0.00082002394, 0.0011102143, 0.3399953, 0.19799547, 0.001821585, -0.0014140225, -0.0010603608, 0.34099331, -0.0010994112, -3.8155353, 0.6622759, -2.6294835)
+visible = false
+texture = ExtResource("4_oqwcg")
+
+[node name="eng_marker2" type="Sprite3D" parent="Math/math_marker" unique_id=1142904552]
+transform = Transform3D(0.6212122, 9.778887e-09, 9.822543e-11, -4.656613e-09, 0.48680377, -8.84335e-05, 3.428795e-10, 4.3302192e-05, 0.99999994, 2.4185681, -0.70681953, -0.014554977)
+visible = false
+texture = ExtResource("4_oqwcg")
+
+[node name="CollisionShape3D2" type="CollisionShape3D" parent="Math" unique_id=541827978]
+transform = Transform3D(0.33999795, 7.67631e-06, 0.0019198321, 0, 0.41999424, -0.0028797805, -0.0011868216, 0.0021990917, 0.5499891, -3.8659313, 1.2583704, -2.80626)
+shape = SubResource("BoxShape3D_yyghn")
+debug_color = Color(0, 0, 0, 1)
+
+[node name="Literature" type="Area3D" parent="." unique_id=1704795771]
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Literature" unique_id=2047192710]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -3.87, 0.18, -1.44)
+shape = SubResource("BoxShape3D_area1")
+debug_color = Color(0, 0, 0, 1)
+
+[node name="lit_marker" type="Sprite3D" parent="Literature" unique_id=1816087198]
+transform = Transform3D(0, 0, 1, 0, 0.131343, 0, -0.170854, 0, 0, -3.78, 0.18, -1.44)
+visible = false
+texture = ExtResource("4_oqwcg")
+
+[node name="Humanities" type="Area3D" parent="." unique_id=535407952]
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Humanities" unique_id=1516238234]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -3.87, 1.35, -3.4)
+shape = SubResource("BoxShape3D_area2")
+debug_color = Color(0, 0, 0, 1)
+
+[node name="hum_marker" type="Sprite3D" parent="Humanities" unique_id=642730241]
+transform = Transform3D(0, 0, 1, 0, 0.0537313, 0, -0.0770519, 0, 0, -3.78, 1.35, -3.4)
+visible = false
+texture = ExtResource("4_oqwcg")
+
+[node name="Research" type="Area3D" parent="." unique_id=540574849]
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Research" unique_id=1028696181]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -3.87, 0.565, -3.4)
+shape = SubResource("BoxShape3D_area3")
+debug_color = Color(0, 0, 0, 1)
+
+[node name="research_marker" type="Sprite3D" parent="Research" unique_id=799878127]
+transform = Transform3D(0, 0, 1, 0, 0.361194, 0, -0.0770519, 0, 0, -3.78, 0.565, -3.4)
+visible = false
+texture = ExtResource("4_oqwcg")
+
+[node name="Economics" type="Area3D" parent="." unique_id=1390116109]
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Economics" unique_id=1268261986]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -3.87, 0.7, -3.96)
+shape = SubResource("BoxShape3D_area4")
+debug_color = Color(0, 0, 0, 1)
+
+[node name="econ_marker" type="Sprite3D" parent="Economics" unique_id=523729283]
+transform = Transform3D(0, 0, 1, 0, 0.441791, 0, -0.0770519, 0, 0, -3.78, 0.7, -3.96)
+visible = false
+texture = ExtResource("4_oqwcg")
+
+[node name="Accounting" type="Area3D" parent="." unique_id=221885353]
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Accounting" unique_id=374604011]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -3.87, 0.7, -4.53)
+shape = SubResource("BoxShape3D_area5")
+debug_color = Color(0, 0, 0, 1)
+
+[node name="acc_marker" type="Sprite3D" parent="Accounting" unique_id=616455894]
+transform = Transform3D(0, 0, 1, 0, 0.441791, 0, -0.0770519, 0, 0, -3.78, 0.7, -4.53)
+visible = false
+texture = ExtResource("4_oqwcg")
+
+[node name="Management" type="Area3D" parent="." unique_id=1767152960]
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Management" unique_id=2142622940]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -3.87, 0.83, -5.09)
+shape = SubResource("BoxShape3D_area6")
+debug_color = Color(0, 0, 0, 1)
+
+[node name="mgt_marker" type="Sprite3D" parent="Management" unique_id=514743897]
+transform = Transform3D(0, 0, 1, 0, 0.364179, 0, -0.0770519, 0, 0, -3.78, 0.83, -5.09)
+visible = false
+texture = ExtResource("4_oqwcg")
+
+[node name="Entrep" type="Area3D" parent="." unique_id=1741560432]
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Entrep" unique_id=1124894873]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -3.87, 0.09, -5.14)
+shape = SubResource("BoxShape3D_area7")
+debug_color = Color(0, 0, 0, 1)
+
+[node name="entrep_marker" type="Sprite3D" parent="Entrep" unique_id=1866425269]
+transform = Transform3D(0, 0, 1, 0, 0.0776119, 0, -0.0938023, 0, 0, -3.78, 0.09, -5.14)
+visible = false
+texture = ExtResource("4_oqwcg")
+
+[node name="MintGreen" type="Area3D" parent="." unique_id=189627978]
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="MintGreen" unique_id=1668030779]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -3.87, 0.7, -5.93)
+shape = SubResource("BoxShape3D_area8")
+debug_color = Color(0, 0, 0, 1)
+
+[node name="mint_marker" type="Sprite3D" parent="MintGreen" unique_id=2117909015]
+transform = Transform3D(0, 0, 1, 0, 0.441791, 0, -0.170854, 0, 0, -3.78, 0.7, -5.93)
+visible = false
+texture = ExtResource("4_oqwcg")
+
+[node name="Computer" type="Area3D" parent="." unique_id=1567579461]
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Computer" unique_id=1438761737]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -3.87, 0.7, -7.61)
+shape = SubResource("BoxShape3D_area9")
+debug_color = Color(0, 0, 0, 1)
+
+[node name="comp_marker" type="Sprite3D" parent="Computer" unique_id=347094926]
+transform = Transform3D(0, 0, 1, 0, 0.441791, 0, -0.358459, 0, 0, -3.78, 0.7, -7.61)
+visible = false
+texture = ExtResource("4_oqwcg")
+
+[node name="Electronics" type="Area3D" parent="." unique_id=1179620490]
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Electronics" unique_id=468545717]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -3.205, 0.565, -8.97)
+shape = SubResource("BoxShape3D_area10")
+debug_color = Color(0, 0, 0, 1)
+
+[node name="elec_marker" type="Sprite3D" parent="Electronics" unique_id=727763166]
+transform = Transform3D(0.169179, 0, 0, 0, 0.361194, 0, 0, 0, 1, -3.205, 0.565, -8.94)
+visible = false
+texture = ExtResource("4_oqwcg")
+
+[node name="Entrep2" type="Area3D" parent="." unique_id=1464604966]
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Entrep2" unique_id=1022554867]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -2.1, 0.83, -8.97)
+shape = SubResource("BoxShape3D_area11")
+debug_color = Color(0, 0, 0, 1)
+
+[node name="entrep_marker" type="Sprite3D" parent="Entrep2" unique_id=1122710673]
+transform = Transform3D(0.170854, 0, 0, 0, 0.364179, 0, 0, 0, 1, -2.1, 0.83, -8.94)
+visible = false
+texture = ExtResource("4_oqwcg")
+
+[node name="Computer2" type="Area3D" parent="." unique_id=620656916]
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Computer2" unique_id=1705754284]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -1.04, 0.7, -8.97)
+shape = SubResource("BoxShape3D_area12")
+debug_color = Color(0, 0, 0, 1)
+
+[node name="CollisionShape3D2" type="CollisionShape3D" parent="Computer2" unique_id=978622892]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -3.16, 1.305, -8.97)
+shape = SubResource("BoxShape3D_area13")
+debug_color = Color(0, 0, 0, 1)
+
+[node name="comp_marker" type="Sprite3D" parent="Computer2" unique_id=2146645364]
+transform = Transform3D(0.184255, 0, 0, 0, 0.441791, 0, 0, 0, 1, -1.04, 0.7, -8.94)
+visible = false
+texture = ExtResource("4_oqwcg")
+
+[node name="comp_marker2" type="Sprite3D" parent="Computer2" unique_id=1298069806]
+transform = Transform3D(0.184255, 0, 0, 0, 0.080597, 0, 0, 0, 1, -3.16, 1.305, -8.94)
+visible = false
+texture = ExtResource("4_oqwcg")
+
+[node name="Computer3" type="Area3D" parent="." unique_id=1640220561]
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Computer3" unique_id=1912784263]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1.28, 0.7, -6.81)
+visible = false
+shape = SubResource("BoxShape3D_area14")
+debug_color = Color(0, 0, 0, 1)
+
+[node name="comp_marker" type="Sprite3D" parent="Computer3" unique_id=1412827761]
+transform = Transform3D(0, 0, -1, 0, 0.441791, 0, 0.170854, 0, 0, 1.23, 0.7, -6.81)
+visible = false
+texture = ExtResource("4_oqwcg")
+
+[node name="SHS2" type="Area3D" parent="." unique_id=533670852]
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="SHS2" unique_id=1788575909]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1.28, 0.44, -5.64)
+shape = SubResource("BoxShape3D_area15")
+debug_color = Color(0, 0, 0, 1)
+
+[node name="shs_marker" type="Sprite3D" parent="SHS2" unique_id=610694214]
+transform = Transform3D(0, 0, -1, 0, 0.441791, 0, 0.170854, 0, 0, 1.23, 0.44, -5.64)
+visible = false
+texture = ExtResource("4_oqwcg")
+
+[node name="SHS" type="Area3D" parent="." unique_id=1587129756]
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="SHS" unique_id=1938103758]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1.28, 0.655, -4.525)
+shape = SubResource("BoxShape3D_area16")
+debug_color = Color(0, 0, 0, 1)
+
+[node name="shs_marker" type="Sprite3D" parent="SHS" unique_id=412397592]
+transform = Transform3D(0, 0, -1, 0, 0.313433, 0, 0.169179, 0, 0, 1.23, 0.655, -4.525)
+visible = false
+texture = ExtResource("4_oqwcg")
+
+[node name="Economics2" type="Area3D" parent="." unique_id=161829523]
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Economics2" unique_id=1531641572]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1.28, -0.085, -4.525)
+shape = SubResource("BoxShape3D_area17")
+debug_color = Color(0, 0, 0, 1)
+
+[node name="econ_marker" type="Sprite3D" parent="Economics2" unique_id=1293766472]
+transform = Transform3D(0, 0, -1, 0, 0.128358, 0, 0.169179, 0, 0, 1.23, -0.085, -4.525)
+visible = false
+texture = ExtResource("4_oqwcg")
+
+[node name="NSTP" type="Area3D" parent="." unique_id=2114113143]
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="NSTP" unique_id=1934425845]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1.28, 1.35, -5.89)
+shape = SubResource("BoxShape3D_area18")
+debug_color = Color(0, 0, 0, 1)
+
+[node name="CollisionShape3D2" type="CollisionShape3D" parent="NSTP" unique_id=577346317]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1.28, 1.35, -5.08)
+shape = SubResource("BoxShape3D_area19")
+debug_color = Color(0, 0, 0, 1)
+
+[node name="nstp_marker" type="Sprite3D" parent="NSTP" unique_id=1454311809]
+transform = Transform3D(0, 0, -1, 0, 0.0537313, 0, 0.0837521, 0, 0, 1.23, 1.35, -5.89)
+visible = false
+texture = ExtResource("4_oqwcg")
+
+[node name="nstp_marker2" type="Sprite3D" parent="NSTP" unique_id=1519745620]
+transform = Transform3D(0, 0, -1, 0, 0.0537313, 0, 0.0268007, 0, 0, 1.23, 1.35, -5.08)
+visible = false
+texture = ExtResource("4_oqwcg")
+
+[node name="PE" type="Area3D" parent="." unique_id=409674165]
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="PE" unique_id=377908793]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1.28, 1.35, -5.4)
+shape = SubResource("BoxShape3D_area20")
+debug_color = Color(0, 0, 0, 1)
+
+[node name="pe_marker" type="Sprite3D" parent="PE" unique_id=1175072793]
+transform = Transform3D(0, 0, -1, 0, 0.0537313, 0, 0.080402, 0, 0, 1.23, 1.35, -5.4)
+visible = false
+texture = ExtResource("4_oqwcg")
+
+[node name="Art Appreciation" type="Area3D" parent="." unique_id=564916463]
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Art Appreciation" unique_id=1383031017]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1.28, 1.35, -4.77)
+shape = SubResource("BoxShape3D_area21")
+debug_color = Color(0, 0, 0, 1)
+
+[node name="art_marker" type="Sprite3D" parent="Art Appreciation" unique_id=105210123]
+transform = Transform3D(0, 0, -1, 0, 0.0537313, 0, 0.0770519, 0, 0, 1.23, 1.35, -4.77)
+visible = false
+texture = ExtResource("4_oqwcg")
+
+[node name="section_3_cam" type="Camera3D" parent="." unique_id=879502669]
+transform = Transform3D(0.034480385, 0, 0.9994054, 0, 1, 0, -0.9994054, 0, 0.034480385, -2.1968207, 1.0029407, -2.0762584)
+
+[node name="section_4_cam" type="Camera3D" parent="." unique_id=38312820]
+transform = Transform3D(0.034480385, 0, 0.9994054, 0, 1, 0, -0.9994054, 0, 0.034480385, -2.1968207, 1.0029407, -5.739861)
+
+[node name="section_5_cam" type="Camera3D" parent="." unique_id=984368428]
+transform = Transform3D(0.99997705, 0, -0.006775487, 0, 1, 0, 0.006775487, 0, 0.99997705, -2.1968207, 0.8924031, -7.425613)
+
+[node name="section_6_cam" type="Camera3D" parent="." unique_id=125458129]
+transform = Transform3D(-0.009274274, 0, -0.999957, 0, 1, 0, 0.999957, 0, -0.009274274, -0.22641468, 0.8924031, -5.590087)
+
+[node name="section_7_cam" type="Camera3D" parent="." unique_id=613886791]
+transform = Transform3D(-0.009274274, 0, -0.999957, 0, 1, 0, 0.999957, 0, -0.009274274, -0.22641468, 0.8924031, -2.7506034)
+
+[node name="sec3_highlight" type="Sprite3D" parent="." unique_id=795425564]
+transform = Transform3D(0, 0, 1, 0, 0.139815, 0, -0.118229, 0, 0, -3.79, 0.715, -1.945)
+visible = false
+texture = ExtResource("6_a6664")
+
+[node name="sec4_highlight" type="Sprite3D" parent="." unique_id=423946139]
+transform = Transform3D(0, 0, 1, 0, 0.137037, 0, -0.170313, 0, 0, -3.79, 0.7, -4.805)
+visible = false
+texture = ExtResource("6_a6664")
+
+[node name="sec5_highlight" type="Sprite3D" parent="." unique_id=947876999]
+transform = Transform3D(0.167708, 0, 0, 0, 0.137037, 0, 0, 0, 1, -2.1, 0.7, -8.968949)
+visible = false
+texture = ExtResource("6_a6664")
+
+[node name="sec5b_highlight" type="Sprite3D" parent="." unique_id=1497871144]
+transform = Transform3D(0, 0, 1, 0, 0.137037, 0, -0.111458, 0, 0, -3.79, 0.7, -7.61)
+visible = false
+texture = ExtResource("6_a6664")
+
+[node name="sec6_highlight" type="Sprite3D" parent="." unique_id=203694312]
+transform = Transform3D(0, 0, -1, 0, 0.161111, 0, 0.171875, 0, 0, 1.2503455, 0.57, -5.67)
+visible = false
+texture = ExtResource("6_a6664")
+
+[node name="Path_To_Section_2" type="Path3D" parent="." unique_id=1844835662]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1.5994976, 0.369246, 1.6398327)
+visible = false
+curve = SubResource("Curve3D_sec2")
+
+[node name="PathFollow3D" type="PathFollow3D" parent="Path_To_Section_2" unique_id=1071477686]
+transform = Transform3D(0.27384123, 0.028815793, 0.96134305, -2.7939677e-09, 0.999551, -0.029961057, -0.9617748, 0.00820457, 0.2737183, 0, 0, 0)
+script = ExtResource("7_10v3s")
+
+[node name="arrow" parent="Path_To_Section_2/PathFollow3D" unique_id=1959167398 instance=ExtResource("4_xvgsr")]
+transform = Transform3D(0.06497543, 1.2716945e-05, 0.0017867312, -2.4435358e-05, 0.06499861, 0.00042598185, -0.0017866082, -0.00042649248, 0.064974055, -0.039694667, 0.3218142, -0.05141735)
+
+[node name="MeshInstance3D" type="MeshInstance3D" parent="Path_To_Section_2/PathFollow3D" unique_id=1302102035]
+transform = Transform3D(0.3105847, -0.05462174, -0.054347217, 0.053879466, -0.007395848, 0.31534475, -0.055083197, -0.31521696, 0.0020186054, 0, 0.43531096, 0.0018199682)
+visible = false
+mesh = SubResource("CapsuleMesh_10v3s")
+
+[node name="Path_To_Section_3" type="Path3D" parent="." unique_id=1978306280]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1.5994976, 0.369246, 1.6398327)
+visible = false
+curve = SubResource("Curve3D_sec3")
+
+[node name="PathFollow3D" type="PathFollow3D" parent="Path_To_Section_3" unique_id=1940099285]
+transform = Transform3D(0.048248325, 0.04806222, 0.9976778, 1.8626446e-09, 0.9988408, -0.04811827, -0.99883497, 0.0023216284, 0.048192423, 0, 0, 0)
+script = ExtResource("7_10v3s")
+
+[node name="arrow" parent="Path_To_Section_3/PathFollow3D" unique_id=1777652994 instance=ExtResource("4_xvgsr")]
+transform = Transform3D(0.06497543, 1.2716945e-05, 0.0017867312, -2.4435358e-05, 0.06499861, 0.00042598185, -0.0017866082, -0.00042649248, 0.064974055, -0.039694667, 0.3218142, -0.05141735)
+
+[node name="MeshInstance3D" type="MeshInstance3D" parent="Path_To_Section_3/PathFollow3D" unique_id=1099975904]
+transform = Transform3D(0.3105847, -0.05462174, -0.054347217, 0.053879466, -0.007395848, 0.31534475, -0.055083197, -0.31521696, 0.0020186054, 0, 0.43531096, 0.0018199682)
+visible = false
+mesh = SubResource("CapsuleMesh_10v3s")
+
+[node name="Path_To_Section_4" type="Path3D" parent="." unique_id=1453831103]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1.5994976, 0.369246, 1.6398327)
+visible = false
+curve = SubResource("Curve3D_sec4")
+
+[node name="PathFollow3D" type="PathFollow3D" parent="Path_To_Section_4" unique_id=1070302523]
+transform = Transform3D(-0.029213367, 0.044952538, 0.99855334, 0, 0.9989869, -0.044971414, -0.99956495, -0.0013137867, -0.029183801, 0, 0, 0)
+script = ExtResource("7_10v3s")
+
+[node name="arrow" parent="Path_To_Section_4/PathFollow3D" unique_id=1190580830 instance=ExtResource("4_xvgsr")]
+transform = Transform3D(0.06497543, 1.2716945e-05, 0.0017867312, -2.4435358e-05, 0.06499861, 0.00042598185, -0.0017866082, -0.00042649248, 0.064974055, -0.039694667, 0.3218142, -0.05141735)
+
+[node name="MeshInstance3D" type="MeshInstance3D" parent="Path_To_Section_4/PathFollow3D" unique_id=1936196520]
+transform = Transform3D(0.3105847, -0.05462174, -0.054347217, 0.053879466, -0.007395848, 0.31534475, -0.055083197, -0.31521696, 0.0020186054, 0, 0.43531096, 0.0018199682)
+visible = false
+mesh = SubResource("CapsuleMesh_10v3s")
+
+[node name="Path_To_Section_5" type="Path3D" parent="." unique_id=918075072]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1.5994976, 0.369246, 1.6398327)
+visible = false
+curve = SubResource("Curve3D_sec5")
+
+[node name="PathFollow3D" type="PathFollow3D" parent="Path_To_Section_5" unique_id=1361399321]
+transform = Transform3D(-0.0992445, 0.047887787, 0.9939087, -5.5879332e-09, 0.9988397, -0.04812539, -0.99506253, -0.004776187, -0.099129416, 0, 0, 0)
+script = ExtResource("7_10v3s")
+
+[node name="arrow" parent="Path_To_Section_5/PathFollow3D" unique_id=507811516 instance=ExtResource("4_xvgsr")]
+transform = Transform3D(0.06497543, 1.2716945e-05, 0.0017867312, -2.4435358e-05, 0.06499861, 0.00042598185, -0.0017866082, -0.00042649248, 0.064974055, -0.039694667, 0.3218142, -0.05141735)
+
+[node name="MeshInstance3D" type="MeshInstance3D" parent="Path_To_Section_5/PathFollow3D" unique_id=496555068]
+transform = Transform3D(0.3105847, -0.05462174, -0.054347217, 0.053879466, -0.007395848, 0.31534475, -0.055083197, -0.31521696, 0.0020186054, 0, 0.43531096, 0.0018199682)
+visible = false
+mesh = SubResource("CapsuleMesh_10v3s")
+
+[node name="Path_To_Section_6" type="Path3D" parent="." unique_id=596176621]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1.5994976, 0.369246, 1.6398327)
+visible = false
+curve = SubResource("Curve3D_sec6")
+
+[node name="PathFollow3D" type="PathFollow3D" parent="Path_To_Section_6" unique_id=1826362772]
+transform = Transform3D(-0.0026940485, 0.059697814, 0.9981961, 0, 0.9981976, -0.05969816, -0.99999535, -0.00016082956, -0.0026892012, 0, 0, 0)
+script = ExtResource("7_10v3s")
+
+[node name="arrow" parent="Path_To_Section_6/PathFollow3D" unique_id=1199315425 instance=ExtResource("4_xvgsr")]
+transform = Transform3D(0.06497543, 1.2716945e-05, 0.0017867312, -2.4435358e-05, 0.06499861, 0.00042598185, -0.0017866082, -0.00042649248, 0.064974055, -0.039694667, 0.3218142, -0.05141735)
+
+[node name="MeshInstance3D" type="MeshInstance3D" parent="Path_To_Section_6/PathFollow3D" unique_id=1121693763]
+transform = Transform3D(0.3105847, -0.05462174, -0.054347217, 0.053879466, -0.007395848, 0.31534475, -0.055083197, -0.31521696, 0.0020186054, 0, 0.43531096, 0.0018199682)
+visible = false
+mesh = SubResource("CapsuleMesh_10v3s")
+
+[connection signal="pressed" from="default_camera/Button" to="." method="_on_button_pressed"]
+[connection signal="pressed" from="default_camera/hide" to="." method="_on_button_2_pressed"]
+[connection signal="pressed" from="default_camera/show" to="." method="_on_hide_2_pressed"]
+[connection signal="area_entered" from="Philosophy" to="." method="_on_philosophy_area_entered"]
+[connection signal="input_event" from="Philosophy" to="." method="_on_philosophy_input_event"]
+[connection signal="mouse_entered" from="Philosophy" to="." method="_on_philosophy_mouse_entered"]
+[connection signal="mouse_exited" from="Philosophy" to="." method="_on_philosophy_mouse_exited"]
+[connection signal="area_entered" from="Psychology" to="." method="_on_psychology_area_entered"]
+[connection signal="input_event" from="Psychology" to="." method="_on_psychology_input_event"]
+[connection signal="mouse_entered" from="Psychology" to="." method="_on_psychology_mouse_entered"]
+[connection signal="mouse_exited" from="Psychology" to="." method="_on_psychology_mouse_exited"]
+[connection signal="input_event" from="Education" to="." method="_on_education_input_event"]
+[connection signal="mouse_entered" from="Education" to="." method="_on_education_mouse_entered"]
+[connection signal="mouse_exited" from="Education" to="." method="_on_education_mouse_exited"]
+[connection signal="input_event" from="Science" to="." method="_on_science_input_event"]
+[connection signal="mouse_entered" from="Science" to="." method="_on_science_mouse_entered"]
+[connection signal="mouse_exited" from="Science" to="." method="_on_science_mouse_exited"]
+[connection signal="input_event" from="English" to="." method="_on_english_input_event"]
+[connection signal="mouse_entered" from="English" to="." method="_on_english_mouse_entered"]
+[connection signal="mouse_exited" from="English" to="." method="_on_english_mouse_exited"]
+[connection signal="input_event" from="Law" to="." method="_on_law_input_event"]
+[connection signal="mouse_entered" from="Law" to="." method="_on_law_mouse_entered"]
+[connection signal="mouse_exited" from="Law" to="." method="_on_law_mouse_exited"]
+[connection signal="input_event" from="Miscellaneous" to="." method="_on_miscellaneous_input_event"]
+[connection signal="mouse_entered" from="Miscellaneous" to="." method="_on_miscellaneous_mouse_entered"]
+[connection signal="mouse_exited" from="Miscellaneous" to="." method="_on_miscellaneous_mouse_exited"]
+[connection signal="input_event" from="Miscellaneous2" to="." method="_on_miscellaneous2_input_event"]
+[connection signal="mouse_entered" from="Miscellaneous2" to="." method="_on_miscellaneous2_mouse_entered"]
+[connection signal="mouse_exited" from="Miscellaneous2" to="." method="_on_miscellaneous2_mouse_exited"]
+[connection signal="input_event" from="Filipino" to="." method="_on_filipino_input_event"]
+[connection signal="mouse_entered" from="Filipino" to="." method="_on_filipino_mouse_entered"]
+[connection signal="mouse_exited" from="Filipino" to="." method="_on_filipino_mouse_exited"]
+[connection signal="input_event" from="Genre" to="." method="_on_genre_input_event"]
+[connection signal="mouse_entered" from="Genre" to="." method="_on_genre_mouse_entered"]
+[connection signal="mouse_exited" from="Genre" to="." method="_on_genre_mouse_exited"]
+[connection signal="input_event" from="Math" to="." method="_on_math_input_event"]
+[connection signal="mouse_entered" from="Math" to="." method="_on_math_mouse_entered"]
+[connection signal="mouse_exited" from="Math" to="." method="_on_math_mouse_exited"]
+[connection signal="input_event" from="Literature" to="." method="_on_literature_input_event"]
+[connection signal="mouse_entered" from="Literature" to="." method="_on_literature_mouse_entered"]
+[connection signal="mouse_exited" from="Literature" to="." method="_on_literature_mouse_exited"]
+[connection signal="input_event" from="Humanities" to="." method="_on_humanities_input_event"]
+[connection signal="mouse_entered" from="Humanities" to="." method="_on_humanities_mouse_entered"]
+[connection signal="mouse_exited" from="Humanities" to="." method="_on_humanities_mouse_exited"]
+[connection signal="input_event" from="Research" to="." method="_on_research_input_event"]
+[connection signal="mouse_entered" from="Research" to="." method="_on_research_mouse_entered"]
+[connection signal="mouse_exited" from="Research" to="." method="_on_research_mouse_exited"]
+[connection signal="input_event" from="Economics" to="." method="_on_economics_input_event"]
+[connection signal="mouse_entered" from="Economics" to="." method="_on_economics_mouse_entered"]
+[connection signal="mouse_exited" from="Economics" to="." method="_on_economics_mouse_exited"]
+[connection signal="input_event" from="Accounting" to="." method="_on_accounting_input_event"]
+[connection signal="mouse_entered" from="Accounting" to="." method="_on_accounting_mouse_entered"]
+[connection signal="mouse_exited" from="Accounting" to="." method="_on_accounting_mouse_exited"]
+[connection signal="input_event" from="Management" to="." method="_on_management_input_event"]
+[connection signal="mouse_entered" from="Management" to="." method="_on_management_mouse_entered"]
+[connection signal="mouse_exited" from="Management" to="." method="_on_management_mouse_exited"]
+[connection signal="input_event" from="Entrep" to="." method="_on_entrep_input_event"]
+[connection signal="mouse_entered" from="Entrep" to="." method="_on_entrep_mouse_entered"]
+[connection signal="mouse_exited" from="Entrep" to="." method="_on_entrep_mouse_exited"]
+[connection signal="input_event" from="MintGreen" to="." method="_on_mintgreen_input_event"]
+[connection signal="mouse_entered" from="MintGreen" to="." method="_on_mintgreen_mouse_entered"]
+[connection signal="mouse_exited" from="MintGreen" to="." method="_on_mintgreen_mouse_exited"]
+[connection signal="input_event" from="Computer" to="." method="_on_computer_input_event"]
+[connection signal="mouse_entered" from="Computer" to="." method="_on_computer_mouse_entered"]
+[connection signal="mouse_exited" from="Computer" to="." method="_on_computer_mouse_exited"]
+[connection signal="input_event" from="Electronics" to="." method="_on_electronics_input_event"]
+[connection signal="mouse_entered" from="Electronics" to="." method="_on_electronics_mouse_entered"]
+[connection signal="mouse_exited" from="Electronics" to="." method="_on_electronics_mouse_exited"]
+[connection signal="input_event" from="Entrep2" to="." method="_on_entrep2_input_event"]
+[connection signal="mouse_entered" from="Entrep2" to="." method="_on_entrep2_mouse_entered"]
+[connection signal="mouse_exited" from="Entrep2" to="." method="_on_entrep2_mouse_exited"]
+[connection signal="input_event" from="Computer2" to="." method="_on_computer2_input_event"]
+[connection signal="mouse_entered" from="Computer2" to="." method="_on_computer2_mouse_entered"]
+[connection signal="mouse_exited" from="Computer2" to="." method="_on_computer2_mouse_exited"]
+[connection signal="input_event" from="Computer3" to="." method="_on_computer3_input_event"]
+[connection signal="mouse_entered" from="Computer3" to="." method="_on_computer3_mouse_entered"]
+[connection signal="mouse_exited" from="Computer3" to="." method="_on_computer3_mouse_exited"]
+[connection signal="input_event" from="SHS2" to="." method="_on_shs2_input_event"]
+[connection signal="mouse_entered" from="SHS2" to="." method="_on_shs2_mouse_entered"]
+[connection signal="mouse_exited" from="SHS2" to="." method="_on_shs2_mouse_exited"]
+[connection signal="input_event" from="SHS" to="." method="_on_shs_input_event"]
+[connection signal="mouse_entered" from="SHS" to="." method="_on_shs_mouse_entered"]
+[connection signal="mouse_exited" from="SHS" to="." method="_on_shs_mouse_exited"]
+[connection signal="input_event" from="Economics2" to="." method="_on_economics2_input_event"]
+[connection signal="mouse_entered" from="Economics2" to="." method="_on_economics2_mouse_entered"]
+[connection signal="mouse_exited" from="Economics2" to="." method="_on_economics2_mouse_exited"]
+[connection signal="input_event" from="NSTP" to="." method="_on_nstp_input_event"]
+[connection signal="mouse_entered" from="NSTP" to="." method="_on_nstp_mouse_entered"]
+[connection signal="mouse_exited" from="NSTP" to="." method="_on_nstp_mouse_exited"]
+[connection signal="input_event" from="PE" to="." method="_on_pe_input_event"]
+[connection signal="mouse_entered" from="PE" to="." method="_on_pe_mouse_entered"]
+[connection signal="mouse_exited" from="PE" to="." method="_on_pe_mouse_exited"]
+[connection signal="input_event" from="Art Appreciation" to="." method="_on_art_appreciation_input_event"]
+[connection signal="mouse_entered" from="Art Appreciation" to="." method="_on_art_appreciation_mouse_entered"]
+[connection signal="mouse_exited" from="Art Appreciation" to="." method="_on_art_appreciation_mouse_exited"]
