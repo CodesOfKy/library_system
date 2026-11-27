@@ -553,7 +553,7 @@ $auditLog = $conn->query("
 
     <!-- Activity log pop-up -->
     <dialog id="auditDialog" class="wide">
-        <h3>Activity Log (Edits &amp; Deletes)</h3>
+        <h3>Activity Log</h3>
         <div class="scroll">
             <table class="limited">
                 <thead>
