@@ -3,9 +3,9 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: Nov 19, 2026 at 08:46 AM
+-- Generation Time: Nov 27, 2026 at 09:25 AM
 -- Server version: 10.4.32-MariaDB
--- PHP Version: 8.2.12
+-- PHP Version: 8.0.30
 
 SET SQL_MODE = "NO_AUTO_VALUE_ON_ZERO";
 START TRANSACTION;
@@ -54,91 +54,16 @@ CREATE TABLE `audit_log` (
   `created_at` datetime NOT NULL DEFAULT current_timestamp()
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
--- --------------------------------------------------------
-
 --
--- Table structure for table `books`
+-- Dumping data for table `audit_log`
 --
 
-CREATE TABLE `books` (
-  `id` int(11) NOT NULL,
-  `title` varchar(150) NOT NULL,
-  `author` varchar(100) NOT NULL,
-  `genre_id` int(11) NOT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
-
---
--- Dumping data for table `books`
---
-
-INSERT INTO `books` (`id`, `title`, `author`, `genre_id`) VALUES
-(1, 'Noli Me Tangere', 'Jose Rizal', 1),
-(2, 'El Filibusterismo', 'Jose Rizal', 1),
-(3, 'Pride and Prejudice', 'Jane Austen', 1),
-(4, 'A Brief History of Time', 'Stephen Hawking', 2),
-(5, 'Cosmos', 'Carl Sagan', 2),
-(6, 'The Origin of Species', 'Charles Darwin', 2),
-(7, 'Sapiens', 'Yuval Noah Harari', 3),
-(8, 'Guns, Germs, and Steel', 'Jared Diamond', 3),
-(9, 'The Histories', 'Herodotus', 3);
-
--- --------------------------------------------------------
-
---
--- Table structure for table `book_loans`
---
-
-CREATE TABLE `book_loans` (
-  `id` int(11) NOT NULL,
-  `teacher_id` int(11) NOT NULL,
-  `book_title` varchar(200) NOT NULL,
-  `borrowed_at` datetime NOT NULL DEFAULT current_timestamp(),
-  `due_date` date NOT NULL,
-  `returned_at` datetime DEFAULT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
-
---
--- Dumping data for table `book_loans`
---
-
-INSERT INTO `book_loans` (`id`, `teacher_id`, `book_title`, `borrowed_at`, `due_date`, `returned_at`) VALUES
-(1, 1, 'Jose Rizal Works', '2026-11-07 15:34:58', '2026-11-14', '2026-11-07 15:35:01'),
-(2, 1, 'Jose Rizal Works', '2026-11-07 15:38:32', '2026-11-14', '2026-11-07 15:38:35'),
-(3, 1, 'Jose Rizal Works', '2026-11-07 15:40:49', '2026-11-14', '2026-11-07 15:40:52'),
-(4, 1, 'Jose', '2026-11-07 15:48:29', '2026-11-14', '2026-11-07 15:48:32'),
-(5, 1, 'Jose Rizal Works', '2026-11-07 15:54:36', '2026-11-14', '2026-11-07 15:54:40'),
-(6, 1, 'Jose Rizal Works', '2026-11-07 15:59:02', '2026-11-14', '2026-11-07 15:59:07'),
-(7, 1, 'Jose Rizal Works', '2026-11-07 16:02:07', '2026-11-14', '2026-11-07 16:05:54'),
-(8, 1, 'Hatdog', '2026-11-07 16:02:20', '2026-11-14', '2026-11-07 16:03:03'),
-(9, 1, 'Footlong', '2026-11-07 16:02:32', '2026-11-14', '2026-11-07 16:05:54'),
-(10, 1, 'Poo', '2026-11-07 16:02:58', '2026-11-14', '2026-11-07 16:05:54'),
-(11, 1, 'adasdad', '2026-11-07 16:05:46', '2026-11-14', '2026-11-07 16:05:54'),
-(12, 1, 'asdadasdadad', '2026-11-07 16:05:46', '2026-11-14', '2026-11-07 16:05:54'),
-(13, 1, 'asdadasdadadadasd', '2026-11-07 16:05:46', '2026-11-14', '2026-11-07 16:10:06'),
-(14, 1, 'wefwerefsdf', '2026-11-07 16:09:58', '2026-11-09', '2026-11-07 16:10:06'),
-(15, 1, 'sfsdfsfsfewrwr', '2026-11-07 16:09:58', '2026-11-09', '2026-11-07 16:10:06'),
-(16, 1, 'wewerwerfsdfsdfwerwfe', '2026-11-07 16:09:58', '2026-11-09', '2026-11-07 16:10:06');
-
--- --------------------------------------------------------
-
---
--- Table structure for table `genres`
---
-
-CREATE TABLE `genres` (
-  `id` int(11) NOT NULL,
-  `name` varchar(50) NOT NULL,
-  `shelf_name` varchar(50) NOT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
-
---
--- Dumping data for table `genres`
---
-
-INSERT INTO `genres` (`id`, `name`, `shelf_name`) VALUES
-(1, 'Fiction', 'Shelf_Fiction'),
-(2, 'Science', 'Shelf_Science'),
-(3, 'History', 'Shelf_History');
+INSERT INTO `audit_log` (`id`, `admin_email`, `action`, `details`, `created_at`) VALUES
+(1, 'admin@gmail.com', 'Admin login', 'Logged in from IP ::1', '2026-11-27 16:15:14'),
+(2, 'admin@gmail.com', 'Re-validation', '123456 requested: Change of grade / year level', '2026-11-27 16:15:28'),
+(3, 'admin@gmail.com', 'Re-validation', '123456 confirmed, card scanned; grade: (blank) to Grade 11; course: (blank) to GAS; section: (blank) to A', '2026-11-27 16:15:50'),
+(4, 'admin@gmail.com', 'Re-validation', '202410139 requested: Change of name', '2026-11-27 16:17:42'),
+(5, 'admin@gmail.com', 'Re-validation', '202410139 confirmed, card scanned; name: NICOLE KYLIE A. FRANCISCO to NICOLE KYLIE ALVAREZ FRANCISCO; grade: (blank) to Grade 11; course: (blank) to GAS; section: (blank) to A', '2026-11-27 16:18:12');
 
 -- --------------------------------------------------------
 
@@ -166,7 +91,9 @@ INSERT INTO `library_in` (`id`, `student_id`, `login_time`) VALUES
 (116, '123456', '2026-10-25 09:06:26'),
 (123, '202410139', '2026-11-03 02:14:33'),
 (126, '123456', '2026-11-03 02:14:54'),
-(127, '123465', '2026-11-07 08:17:51');
+(127, '123465', '2026-11-07 08:17:51'),
+(130, '123456', '2026-11-27 08:14:17'),
+(131, '020103', '2026-11-27 08:15:05');
 
 -- --------------------------------------------------------
 
@@ -238,6 +165,14 @@ CREATE TABLE `revalidations` (
   `confirmed_at` datetime DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
+--
+-- Dumping data for table `revalidations`
+--
+
+INSERT INTO `revalidations` (`id`, `student_id`, `reason`, `status`, `docs_checked`, `requested_at`, `confirmed_at`) VALUES
+(1, '123456', 'Change of grade / year level', 'confirmed', 'student_id,reg_form', '2026-11-27 16:15:28', '2026-11-27 16:15:50'),
+(2, '202410139', 'Change of name', 'confirmed', 'student_id,reg_form', '2026-11-27 16:17:42', '2026-11-27 16:18:12');
+
 -- --------------------------------------------------------
 
 --
@@ -255,7 +190,11 @@ CREATE TABLE `rfid_logs` (
 --
 
 INSERT INTO `rfid_logs` (`id`, `uid`, `scanned_at`) VALUES
-(267, '79CCD106', '2026-11-07 08:17:53');
+(282, 'CDB52F8E', '2026-11-27 08:15:56'),
+(283, '79CCD106', '2026-11-27 08:18:00'),
+(284, '1572D406', '2026-11-27 08:18:02'),
+(285, 'CDB52F8E', '2026-11-27 08:18:03'),
+(286, 'B4321106', '2026-11-27 08:18:10');
 
 -- --------------------------------------------------------
 
@@ -283,9 +222,10 @@ CREATE TABLE `students` (
 --
 
 INSERT INTO `students` (`id`, `student_id`, `first_name`, `middle_name`, `last_name`, `name`, `rfid_uid`, `registered_at`, `level`, `grade`, `course`, `section`) VALUES
-(23, '123456', 'SPONGEBOB', '', 'SQUAREPANTS', 'SPONGEBOB SQUAREPANTS', 'CDB52F8E', '2026-10-25 09:04:24', 'SHS', NULL, NULL, NULL),
-(26, '202410139', 'NICOLE KYLIE', 'A.', 'FRANCISCO', 'NICOLE KYLIE A. FRANCISCO', 'B4321106', '2026-11-03 02:14:26', 'SHS', NULL, NULL, NULL),
-(27, '123465', 'Nebula', 'Sirius', 'Cosmic', 'Nebula Sirius Cosmic', '79CCD106', '2026-11-07 08:17:46', 'SHS', NULL, NULL, NULL);
+(23, '123456', 'SPONGEBOB', '', 'SQUAREPANTS', 'SPONGEBOB SQUAREPANTS', 'CDB52F8E', '2026-10-25 09:04:24', 'SHS', 'Grade 11', 'GAS', 'A'),
+(26, '202410139', 'NICOLE KYLIE', 'ALVAREZ', 'FRANCISCO', 'NICOLE KYLIE ALVAREZ FRANCISCO', 'B4321106', '2026-11-03 02:14:26', 'SHS', 'Grade 11', 'GAS', 'A'),
+(27, '123465', 'Nebula', 'Sirius', 'Cosmic', 'Nebula Sirius Cosmic', '79CCD106', '2026-11-07 08:17:46', 'SHS', NULL, NULL, NULL),
+(28, '020103', 'Skadi', 'Skadidi', 'Skadoosh', 'Skadi Skadidi Skadoosh', '25351106', '2026-11-27 08:15:02', 'College', '1st Year', 'Entrep', 'as');
 
 -- --------------------------------------------------------
 
@@ -298,6 +238,14 @@ CREATE TABLE `student_status` (
   `status` enum('in','out') NOT NULL DEFAULT 'out',
   `updated_at` timestamp NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp()
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Dumping data for table `student_status`
+--
+
+INSERT INTO `student_status` (`student_id`, `status`, `updated_at`) VALUES
+('020103', 'in', '2026-11-27 08:15:05'),
+('123456', 'in', '2026-11-27 08:14:17');
 
 -- --------------------------------------------------------
 
@@ -335,28 +283,6 @@ ALTER TABLE `admins`
 --
 ALTER TABLE `audit_log`
   ADD PRIMARY KEY (`id`);
-
---
--- Indexes for table `books`
---
-ALTER TABLE `books`
-  ADD PRIMARY KEY (`id`),
-  ADD KEY `genre_id` (`genre_id`);
-
---
--- Indexes for table `book_loans`
---
-ALTER TABLE `book_loans`
-  ADD PRIMARY KEY (`id`),
-  ADD KEY `teacher_id` (`teacher_id`);
-
---
--- Indexes for table `genres`
---
-ALTER TABLE `genres`
-  ADD PRIMARY KEY (`id`),
-  ADD UNIQUE KEY `name` (`name`),
-  ADD UNIQUE KEY `shelf_name` (`shelf_name`);
 
 --
 -- Indexes for table `library_in`
@@ -425,31 +351,13 @@ ALTER TABLE `admins`
 -- AUTO_INCREMENT for table `audit_log`
 --
 ALTER TABLE `audit_log`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
-
---
--- AUTO_INCREMENT for table `books`
---
-ALTER TABLE `books`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=10;
-
---
--- AUTO_INCREMENT for table `book_loans`
---
-ALTER TABLE `book_loans`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=17;
-
---
--- AUTO_INCREMENT for table `genres`
---
-ALTER TABLE `genres`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=6;
 
 --
 -- AUTO_INCREMENT for table `library_in`
 --
 ALTER TABLE `library_in`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=128;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=132;
 
 --
 -- AUTO_INCREMENT for table `library_out`
@@ -467,41 +375,25 @@ ALTER TABLE `options`
 -- AUTO_INCREMENT for table `revalidations`
 --
 ALTER TABLE `revalidations`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
 
 --
 -- AUTO_INCREMENT for table `rfid_logs`
 --
 ALTER TABLE `rfid_logs`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=268;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=287;
 
 --
 -- AUTO_INCREMENT for table `students`
 --
 ALTER TABLE `students`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=28;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=29;
 
 --
 -- AUTO_INCREMENT for table `teachers`
 --
 ALTER TABLE `teachers`
   MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
-
---
--- Constraints for dumped tables
---
-
---
--- Constraints for table `books`
---
-ALTER TABLE `books`
-  ADD CONSTRAINT `books_ibfk_1` FOREIGN KEY (`genre_id`) REFERENCES `genres` (`id`);
-
---
--- Constraints for table `book_loans`
---
-ALTER TABLE `book_loans`
-  ADD CONSTRAINT `book_loans_ibfk_1` FOREIGN KEY (`teacher_id`) REFERENCES `teachers` (`id`) ON DELETE CASCADE;
 COMMIT;
 
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
