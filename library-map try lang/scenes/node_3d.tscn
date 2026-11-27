@@ -410,7 +410,7 @@ visible = false
 curve = SubResource("Curve3D_10v3s")
 
 [node name="PathFollow3D" type="PathFollow3D" parent="Path_To_Section_1" unique_id=1772712335]
-transform = Transform3D(0.098286435, 0.028937066, 0.9947369, 0.0005287174, 0.9995753, -0.02913004, -0.99515796, 0.003389024, 0.09822938, -2.4047596, 0.07042139, -0.25990346)
+transform = Transform3D(0.098286435, 0.028937066, 0.99473685, 0.0005287174, 0.9995753, -0.02913004, -0.99515796, 0.003389024, 0.09822938, -2.4047596, 0.07042139, -0.25990346)
 progress = 2.4198084
 script = ExtResource("7_10v3s")
 
@@ -733,10 +733,10 @@ texture = ExtResource("4_oqwcg")
 transform = Transform3D(0.034480385, 0, 0.9994054, 0, 1, 0, -0.9994054, 0, 0.034480385, -2.1968207, 1.0029407, -2.0762584)
 
 [node name="section_4_cam" type="Camera3D" parent="." unique_id=38312820]
-transform = Transform3D(0.034480385, 0, 0.9994054, 0, 1, 0, -0.9994054, 0, 0.034480385, -2.1968207, 1.0029407, -5.739861)
+transform = Transform3D(0.034480385, 0, 0.9994054, 0, 1, 0, -0.9994054, 0, 0.034480385, -1.9549106, 1.0029407, -5.739861)
 
 [node name="section_5_cam" type="Camera3D" parent="." unique_id=984368428]
-transform = Transform3D(0.99997705, 0, -0.006775487, 0, 1, 0, 0.006775487, 0, 0.99997705, -2.1968207, 0.8924031, -7.425613)
+transform = Transform3D(0.8665154, 0, 0.49915028, 0, 1, 0, -0.49915028, 0, 0.8665154, -1.8087418, 0.8924031, -6.2683706)
 
 [node name="section_6_cam" type="Camera3D" parent="." unique_id=125458129]
 transform = Transform3D(-0.009274274, 0, -0.999957, 0, 1, 0, 0.999957, 0, -0.009274274, -0.22641468, 0.8924031, -5.590087)
@@ -775,7 +775,7 @@ visible = false
 curve = SubResource("Curve3D_sec2")
 
 [node name="PathFollow3D" type="PathFollow3D" parent="Path_To_Section_2" unique_id=1071477686]
-transform = Transform3D(0.27384123, 0.028815793, 0.96134305, -2.7939677e-09, 0.999551, -0.029961057, -0.9617748, 0.00820457, 0.2737183, 0, 0, 0)
+transform = Transform3D(0.27384123, 0.028815791, 0.961343, -2.7939675e-09, 0.99955094, -0.029961055, -0.96177477, 0.00820457, 0.2737183, 0, 0, 0)
 script = ExtResource("7_10v3s")
 
 [node name="arrow" parent="Path_To_Section_2/PathFollow3D" unique_id=1959167398 instance=ExtResource("4_xvgsr")]
@@ -809,7 +809,7 @@ visible = false
 curve = SubResource("Curve3D_sec4")
 
 [node name="PathFollow3D" type="PathFollow3D" parent="Path_To_Section_4" unique_id=1070302523]
-transform = Transform3D(-0.029213367, 0.044952538, 0.99855334, 0, 0.9989869, -0.044971414, -0.99956495, -0.0013137867, -0.029183801, 0, 0, 0)
+transform = Transform3D(-0.029213365, 0.044952538, 0.9985533, 0, 0.9989869, -0.04497141, -0.9995649, -0.0013137867, -0.029183801, 0, 0, 0)
 script = ExtResource("7_10v3s")
 
 [node name="arrow" parent="Path_To_Section_4/PathFollow3D" unique_id=1190580830 instance=ExtResource("4_xvgsr")]
@@ -853,6 +853,26 @@ transform = Transform3D(0.06497543, 1.2716945e-05, 0.0017867312, -2.4435358e-05,
 transform = Transform3D(0.3105847, -0.05462174, -0.054347217, 0.053879466, -0.007395848, 0.31534475, -0.055083197, -0.31521696, 0.0020186054, 0, 0.43531096, 0.0018199682)
 visible = false
 mesh = SubResource("CapsuleMesh_10v3s")
+
+[node name="VBoxContainer" type="VBoxContainer" parent="." unique_id=1997142175]
+offset_left = 304.0
+offset_top = 92.0
+offset_right = 907.0
+offset_bottom = 150.0
+
+[node name="search_bg" type="Sprite2D" parent="VBoxContainer" unique_id=164253517]
+modulate = Color(1, 1, 1, 0.39215687)
+position = Vector2(298, 27)
+scale = Vector2(0.9514107, 0.12682286)
+texture = ExtResource("3_5t4e2")
+
+[node name="LineEdit" type="LineEdit" parent="VBoxContainer" unique_id=1300898402]
+layout_mode = 2
+placeholder_text = "search books here"
+alignment = 1
+
+[node name="Control" type="Control" parent="VBoxContainer" unique_id=1193245312]
+layout_mode = 2
 
 [connection signal="pressed" from="default_camera/Button" to="." method="_on_button_pressed"]
 [connection signal="pressed" from="default_camera/hide" to="." method="_on_button_2_pressed"]
@@ -949,3 +969,4 @@ mesh = SubResource("CapsuleMesh_10v3s")
 [connection signal="input_event" from="Art Appreciation" to="." method="_on_art_appreciation_input_event"]
 [connection signal="mouse_entered" from="Art Appreciation" to="." method="_on_art_appreciation_mouse_entered"]
 [connection signal="mouse_exited" from="Art Appreciation" to="." method="_on_art_appreciation_mouse_exited"]
+[connection signal="text_submitted" from="VBoxContainer/LineEdit" to="." method="_on_line_edit_text_submitted"]

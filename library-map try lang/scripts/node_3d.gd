@@ -72,13 +72,16 @@ extends Node3D
 @onready var path_to_section_5: Path3D = $Path_To_Section_5
 @onready var path_to_section_6: Path3D = $Path_To_Section_6
 
+@onready var line_edit: LineEdit = $default_camera/LineEdit
 
 var currently_clicked := ""
 var camera_tween: Tween
 var current_cam: Camera3D
 var is_camera_moving := false
 
-var clicked_section := 0
+var clicked_section := 0 
+
+var search_queue = ""
 
 var philosophy_books := [
 	"The Republic\nPlato\n380 BC",
@@ -826,3 +829,87 @@ func _on_hide_2_pressed() -> void:
 	sprite_2d.visible = true
 
 	show.visible = false
+
+
+var genre_books_list := {
+	"PHILOSOPHY": philosophy_books,
+	"PSYCHOLOGY": psychology_books,
+	"EDUCATION": education_books,
+	"SCIENCE": science_books,
+	"ENGLISH": english_books,
+	"LAW": law_books,
+	"MISC": misc_books,
+	"FILIPINO": filipino_books,
+	"GENRE": genre_books,
+	"MATH": math_books,
+	"LITERATURE": literature_books,
+	"HUMANITIES": humanities_books,
+	"RESEARCH": research_books,
+	"ECONOMICS": economics_books,
+	"ACCOUNTING": accounting_books,
+	"MANAGEMENT": management_books,
+	"ENTREP": entrep_books,
+	"MINTGREEN": mintgreen_books,
+	"COMPUTER": computer_books,
+	"ELECTRONICS": electronics_books,
+	"SHS": shs_books,
+	"NSTP": nstp_books,
+	"PE": pe_books,
+	"ART APPRECIATION": art_books
+}
+
+var genre_sections := {
+	"PHILOSOPHY": 1, "PSYCHOLOGY": 1, "EDUCATION": 1, "SCIENCE": 1, "ENGLISH": 1, "LAW": 1,
+	"MISC": 2,
+	"FILIPINO": 3, "GENRE": 3, "MATH": 3, "LITERATURE": 3,
+	"HUMANITIES": 4, "RESEARCH": 4, "ECONOMICS": 4, "ACCOUNTING": 4, "MANAGEMENT": 4, "ENTREP": 4, "MINTGREEN": 4,
+	"COMPUTER": 5, "ELECTRONICS": 5,
+	"SHS": 6, "NSTP": 6, "PE": 6, "ART APPRECIATION": 6
+}
+
+
+func go_to_genre(genre_name):
+	var section = genre_sections[genre_name]
+	currently_clicked = genre_name
+	clicked_section = section
+
+	if section == 1:
+		animate_camera(section_1_cam)
+	elif section == 2:
+		animate_camera(section_2_cam)
+	elif section == 3:
+		animate_camera(section_3_cam)
+	elif section == 4:
+		animate_camera(section_4_cam)
+	elif section == 5:
+		animate_camera(section_5_cam)
+	elif section == 6:
+		animate_camera(section_6_cam)
+
+	show_genre()
+
+
+func _on_line_edit_text_submitted(new_text: String):
+	search_queue = new_text.strip_edges().to_lower()
+
+	if search_queue == "":
+		return
+
+	# 1. search by genre name
+	for genre_name in genre_books_list:
+		if genre_name.to_lower() == search_queue:
+			go_to_genre(genre_name)
+			return
+
+	# 2. search by book title or author
+	for genre_name in genre_books_list:
+		for book in genre_books_list[genre_name]:
+			if book.to_lower().contains(search_queue):
+				go_to_genre(genre_name)
+				return
+
+	# 3. nothing found
+	genre.text = "NOT FOUND"
+	label.text = "No results for " + new_text
+	genre_selected.visible = true
+	genre_bg.visible = false

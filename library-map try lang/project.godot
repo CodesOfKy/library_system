@@ -10,7 +10,7 @@ config_version=5
 
 [application]
 
-config/name="Library_Map(opo legit to)"
+config/name="Library_Map(opo legit to final opo revised opo)"
 run/main_scene="uid://6sgjk7ruqldr"
 config/features=PackedStringArray("4.7", "GL Compatibility")
 config/icon="res://icon.svg"
