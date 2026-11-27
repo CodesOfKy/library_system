@@ -186,18 +186,48 @@ $rangeSql = [
     'all'   => "1",
 ];
 
-function activity($conn, $table, $col, $condition) {
-    return $conn->query("
+// Search box (student name or ID) and calendar date for Recent Activity
+$q = mb_substr(trim($_GET['q'] ?? ''), 0, 60);
+
+$fDate = $_GET['date'] ?? '';
+if (!preg_match('/^(\d{4})-(\d{2})-(\d{2})$/', $fDate, $m) || !checkdate((int)$m[2], (int)$m[3], (int)$m[1])) {
+    $fDate = '';
+}
+$fDateText = $fDate !== '' ? date('M d, Y', strtotime($fDate)) : '';
+
+// Used in the links below so the search text survives clicking a range button
+$qParam = $q !== '' ? '&q=' . urlencode($q) : '';
+
+function activity($conn, $table, $col, $condition, $q = '', $date = '') {
+    // A picked date replaces the Today / Week / Month / All range
+    $where  = [$date !== '' ? "DATE(l.$col) = ?" : str_replace('{col}', "l.$col", $condition)];
+    $types  = '';
+    $params = [];
+    if ($date !== '') {
+        $types .= 's';
+        $params[] = $date;
+    }
+    if ($q !== '') {
+        $like = '%' . addcslashes($q, '%_\\') . '%';
+        $where[] = "(s.name LIKE ? OR s.student_id LIKE ?)";
+        $types .= 'ss';
+        array_push($params, $like, $like);
+    }
+
+    $stmt = $conn->prepare("
         SELECT s.name, s.student_id, DATE_FORMAT(l.$col, '%b %d, %Y %h:%i %p') AS time_text
         FROM $table l JOIN students s ON s.student_id = l.student_id
-        WHERE " . str_replace('{col}', "l.$col", $condition) . "
+        WHERE " . implode(' AND ', $where) . "
         ORDER BY l.$col DESC
         LIMIT 100
-    ")->fetch_all(MYSQLI_ASSOC);
+    ");
+    if ($params) $stmt->bind_param($types, ...$params);
+    $stmt->execute();
+    return $stmt->get_result()->fetch_all(MYSQLI_ASSOC);
 }
 
-$loggedIn  = activity($conn, 'library_in',  'login_time',  $rangeSql[$range]);
-$loggedOut = activity($conn, 'library_out', 'logout_time', $rangeSql[$range]);
+$loggedIn  = activity($conn, 'library_in',  'login_time',  $rangeSql[$range], $q, $fDate);
+$loggedOut = activity($conn, 'library_out', 'logout_time', $rangeSql[$range], $q, $fDate);
 
 // ---- Audit log (edits and deletes) ----
 $auditLog = $conn->query("
@@ -226,6 +256,18 @@ $auditLog = $conn->query("
         [hidden] { display: none !important; }     /* rows hidden by "View all" */
         .view-all { display: inline-block; margin-top: .5rem; }
         dialog.wide { width: min(700px, 95vw); }
+
+        /* Recent Activity search bar + calendar icon */
+        .activity-search { display: flex; align-items: center; gap: .5rem; flex-wrap: wrap; margin-bottom: .75rem; }
+        .search-wrap { position: relative; flex: 1 1 260px; max-width: 420px; }
+        .search-wrap input[type=text] { width: 100%; box-sizing: border-box; padding-right: 2.5rem; }
+        .search-wrap .cal-btn { position: absolute; right: 4px; top: 50%; transform: translateY(-50%);
+                                background: none; border: 0; padding: 4px; cursor: pointer; color: inherit; line-height: 0; }
+        .search-wrap .cal-btn:hover { opacity: .7; }
+        .search-wrap input[type=date] { position: absolute; right: 0; bottom: 0; width: 1px; height: 1px;
+                                        opacity: 0; pointer-events: none; }
+        .date-chip { display: inline-flex; align-items: center; gap: .4rem; padding: 2px 10px;
+                     border: 1px solid rgba(128,128,128,.6); border-radius: 999px; font-size: .9em; }
     </style>
 </head>
 <body>
@@ -257,6 +299,8 @@ $auditLog = $conn->query("
             <h3>Library Visits (Last 14 Days)</h3>
             <form method="GET" class="filters">
                 <input type="hidden" name="range" value="<?= $range ?>">
+                <input type="hidden" name="q" value="<?= htmlspecialchars($q) ?>">
+                <input type="hidden" name="date" value="<?= htmlspecialchars($fDate) ?>">
                 <?php foreach (['grade' => [$fGrade, 'All Grades'], 'course' => [$fCourse, 'All Courses']] as $key => [$current, $allLabel]): ?>
                     <select name="<?= $key ?>" onchange="this.form.submit()">
                         <option value=""><?= $allLabel ?></option>
@@ -372,11 +416,39 @@ $auditLog = $conn->query("
         <div class="panel">
             <h3>Recent Activity</h3>
 
+            <!-- Search by student name / ID, or pick a date with the calendar icon -->
+            <form method="GET" class="activity-search" id="activityForm">
+                <input type="hidden" name="range" value="<?= $range ?>">
+                <input type="hidden" name="grade" value="<?= htmlspecialchars($fGrade) ?>">
+                <input type="hidden" name="course" value="<?= htmlspecialchars($fCourse) ?>">
+                <div class="search-wrap">
+                    <input type="text" name="q" id="activitySearch" maxlength="60"
+                           placeholder="Search student name or ID..." value="<?= htmlspecialchars($q) ?>">
+                    <button type="button" class="cal-btn" id="dateBtn" title="Search by date" aria-label="Search by date">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                             stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <rect x="3" y="4" width="18" height="18" rx="2"/>
+                            <line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/>
+                            <line x1="3" y1="10" x2="21" y2="10"/>
+                        </svg>
+                    </button>
+                    <input type="date" name="date" id="dateInput" value="<?= htmlspecialchars($fDate) ?>"
+                           max="<?= date('Y-m-d') ?>" tabindex="-1" aria-hidden="true">
+                </div>
+                <button type="submit">Search</button>
+                <?php if ($fDate !== ''): ?>
+                    <span class="date-chip">Date: <?= htmlspecialchars($fDateText) ?></span>
+                <?php endif; ?>
+                <?php if ($q !== '' || $fDate !== ''): ?>
+                    <a href="?range=<?= $range ?>">Clear</a>
+                <?php endif; ?>
+            </form>
+
             <div class="filters">
-                <a href="?range=today" class="<?= $range === 'today' ? 'active' : '' ?>">Today</a>
-                <a href="?range=week"  class="<?= $range === 'week'  ? 'active' : '' ?>">This Week</a>
-                <a href="?range=month" class="<?= $range === 'month' ? 'active' : '' ?>">This Month</a>
-                <a href="?range=all"   class="<?= $range === 'all'   ? 'active' : '' ?>">All</a>
+                <a href="?range=today<?= $qParam ?>" class="<?= !$fDate && $range === 'today' ? 'active' : '' ?>">Today</a>
+                <a href="?range=week<?= $qParam ?>"  class="<?= !$fDate && $range === 'week'  ? 'active' : '' ?>">This Week</a>
+                <a href="?range=month<?= $qParam ?>" class="<?= !$fDate && $range === 'month' ? 'active' : '' ?>">This Month</a>
+                <a href="?range=all<?= $qParam ?>"   class="<?= !$fDate && $range === 'all'   ? 'active' : '' ?>">All</a>
             </div>
 
             <div class="two-col" style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem;">
@@ -660,7 +732,7 @@ $auditLog = $conn->query("
 
         for (const [title, id] of [['Logged In', 'loginTable'], ['Logged Out', 'logoutTable']]) {
             y = doc.lastAutoTable.finalY + 10;
-            doc.text(title + ' (<?= $range ?>)', 14, y);
+            doc.text(title + ' (' + <?= json_encode(($fDate !== '' ? $fDateText : $range) . ($q !== '' ? ' | Search: ' . $q : '')) ?> + ')', 14, y);
             doc.autoTable({ startY: y + 3, html: '#' + id, includeHiddenHtml: true, styles: { fontSize: 8 } });
         }
 
@@ -876,6 +948,13 @@ $auditLog = $conn->query("
             cvPrompt();                                     // scan again after any error
         }
     });
+
+    // Recent Activity: calendar icon opens the date picker, picking a date runs the search
+    $('dateBtn').addEventListener('click', () => {
+        const input = $('dateInput');
+        try { input.showPicker(); } catch (e) { input.focus(); input.click(); }
+    });
+    $('dateInput').addEventListener('change', () => $('activityForm').submit());
 
     // Activity log pop-up
     $('auditBtn').addEventListener('click', () => $('auditDialog').showModal());
