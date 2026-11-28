@@ -17,7 +17,6 @@ $docs = ['student_id' => 'Student ID', 'reg_form' => 'Registration Form'];    //
 const OTHER_REASON = 'Other';
 $reasons = [
     'Lost / broken NFC sticker',
-    OTHER_REASON,
     'Change of name',
     'Change of grade / year level',
     'Change of course / strand',
@@ -25,6 +24,7 @@ $reasons = [
     'New school year / semester enrollment',
     'Transferee',
     'Incorrect details in the record',
+    OTHER_REASON,
 ];
 
 function hide_uid($uid) {
@@ -36,11 +36,21 @@ function one($conn, $sql) {
     return ($conn->query($sql)->fetch_row() ?? ['?'])[0];
 }
 
+// Safe helpers: a failed query gives 0 / an empty list instead of a fatal error
+function scalar($conn, $sql) {
+    $res = $conn->query($sql);
+    return $res ? (int)($res->fetch_row()[0] ?? 0) : 0;
+}
+function rows($conn, $sql) {
+    $res = $conn->query($sql);
+    return $res ? $res->fetch_all(MYSQLI_ASSOC) : [];
+}
+
 // ---- Form posts: filters + re-validation ----
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     if (isset($_POST['add_option'])) {
         $name = trim($_POST['name'] ?? '');
-        if ($name !== '' && in_array($_POST['kind'], ['grade', 'course']) && in_array($_POST['level'], ['SHS', 'College'])) {
+        if ($name !== '' && in_array($_POST['kind'] ?? '', ['grade', 'course'], true) && in_array($_POST['level'] ?? '', ['SHS', 'College'], true)) {
             $stmt = $conn->prepare("INSERT IGNORE INTO options (kind, level, name) VALUES (?, ?, ?)");
             $stmt->bind_param("sss", $_POST['kind'], $_POST['level'], $name);
             $stmt->execute();
@@ -50,7 +60,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         }
 
     } elseif (isset($_POST['delete_option'])) {
-        $id    = (int)$_POST['id'];
+        $id    = (int)($_POST['id'] ?? 0);
         $label = one($conn, "SELECT CONCAT(kind, ': ', name, ' (', level, ')') FROM options WHERE id = $id");
         $conn->query("DELETE FROM options WHERE id = $id");
         log_action($conn, 'Delete filter', $label);
@@ -89,7 +99,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         }
 
     } elseif (isset($_POST['cancel_revalidation'])) {
-        $id = (int)$_POST['id'];
+        $id = (int)($_POST['id'] ?? 0);
         $conn->query("UPDATE revalidations SET status = 'cancelled' WHERE id = $id AND status = 'pending'");
         if ($conn->affected_rows > 0) {
             log_action($conn, 'Re-validation', one($conn, "SELECT student_id FROM revalidations WHERE id = $id") . ' cancelled');
@@ -106,13 +116,13 @@ $flash = $_SESSION['flash'] ?? null;
 unset($_SESSION['flash']);
 
 // ---- Summary numbers ----
-$totalStudents = (int)$conn->query("SELECT COUNT(*) AS c FROM students")->fetch_assoc()['c'];
-$insideNow     = (int)$conn->query("SELECT COUNT(*) AS c FROM student_status WHERE status = 'in'")->fetch_assoc()['c'];
-$visitsToday   = (int)$conn->query("SELECT COUNT(*) AS c FROM library_in WHERE DATE(login_time) = CURDATE()")->fetch_assoc()['c'];
-$logoutsToday  = (int)$conn->query("SELECT COUNT(*) AS c FROM library_out WHERE DATE(logout_time) = CURDATE()")->fetch_assoc()['c'];
+$totalStudents = scalar($conn, "SELECT COUNT(*) FROM students");
+$insideNow     = scalar($conn, "SELECT COUNT(*) FROM student_status WHERE status = 'in'");
+$visitsToday   = scalar($conn, "SELECT COUNT(*) FROM library_in WHERE DATE(login_time) = CURDATE()");
+$logoutsToday  = scalar($conn, "SELECT COUNT(*) FROM library_out WHERE DATE(logout_time) = CURDATE()");
 
 // ---- Filter options (graph filters and Manage Filters panel) ----
-$options = $conn->query("SELECT * FROM options ORDER BY kind DESC, level DESC, id")->fetch_all(MYSQLI_ASSOC);
+$options = rows($conn, "SELECT * FROM options ORDER BY kind DESC, level DESC, id");
 $names = ['grade' => [], 'course' => []];
 foreach ($options as $o) {
     $names[$o['kind']][] = $o['name'];
@@ -147,7 +157,7 @@ for ($i = 13; $i >= 0; $i--) {
 }
 
 // ---- Students table ----
-$students = $conn->query("
+$students = rows($conn, "
     SELECT s.student_id, s.name, s.first_name, s.middle_name, s.last_name, s.rfid_uid,
            s.grade, s.course, s.section,
            COALESCE(st.status, 'out') AS status,
@@ -161,17 +171,17 @@ $students = $conn->query("
     FROM students s
     LEFT JOIN student_status st ON st.student_id = s.student_id
     ORDER BY s.name
-")->fetch_all(MYSQLI_ASSOC);
+");
 
 // ---- Waiting for re-validation ----
-$pending = $conn->query("
+$pending = rows($conn, "
     SELECT r.id, r.reason, s.student_id, s.name, s.first_name, s.middle_name, s.last_name,
            s.level, s.grade, s.course, s.section,
            DATE_FORMAT(r.requested_at, '%b %d, %Y %h:%i %p') AS requested
     FROM revalidations r JOIN students s ON s.student_id = r.student_id
     WHERE r.status = 'pending'
     ORDER BY r.requested_at
-")->fetch_all(MYSQLI_ASSOC);
+");
 
 // ---- Recent activity: one table for log ins, one for log outs ----
 $range = $_GET['range'] ?? 'all';
@@ -229,11 +239,24 @@ function activity($conn, $table, $col, $condition, $q = '', $date = '') {
 $loggedIn  = activity($conn, 'library_in',  'login_time',  $rangeSql[$range], $q, $fDate);
 $loggedOut = activity($conn, 'library_out', 'logout_time', $rangeSql[$range], $q, $fDate);
 
+// Dates that have at least one log in / log out (marked in the calendar): ['2026-11-27' => ['in' => 3, 'out' => 2]]
+$activityDates = [];
+foreach (['in' => ['library_in', 'login_time'], 'out' => ['library_out', 'logout_time']] as $kind => [$table, $col]) {
+    $res = $conn->query("SELECT DATE(l.$col) AS d, COUNT(*) AS c
+                         FROM $table l JOIN students s ON s.student_id = l.student_id
+                         GROUP BY d");
+    if ($res) {
+        while ($row = $res->fetch_assoc()) {
+            $activityDates[$row['d']][$kind] = (int)$row['c'];
+        }
+    }
+}
+
 // ---- Audit log (edits and deletes) ----
-$auditLog = $conn->query("
+$auditLog = rows($conn, "
     SELECT admin_email, action, details, DATE_FORMAT(created_at, '%b %d, %Y %h:%i:%s %p') AS logged_at
     FROM audit_log ORDER BY id DESC LIMIT 200
-")->fetch_all(MYSQLI_ASSOC);
+");
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -252,34 +275,38 @@ $auditLog = $conn->query("
     });
     </script>
     <link rel="stylesheet" href="admin.css">
-    <style>
-        [hidden] { display: none !important; }     /* rows hidden by "View all" */
-        .view-all { display: inline-block; margin-top: .5rem; }
-        dialog.wide { width: min(700px, 95vw); }
 
-        /* Recent Activity search bar + calendar icon */
-        .activity-search { display: flex; align-items: center; gap: .5rem; flex-wrap: wrap; margin-bottom: .75rem; }
-        .search-wrap { position: relative; flex: 1 1 260px; max-width: 420px; }
-        .search-wrap input[type=text] { width: 100%; box-sizing: border-box; padding-right: 2.5rem; }
-        .search-wrap .cal-btn { position: absolute; right: 4px; top: 50%; transform: translateY(-50%);
-                                background: none; border: 0; padding: 4px; cursor: pointer; color: inherit; line-height: 0; }
-        .search-wrap .cal-btn:hover { opacity: .7; }
-        .search-wrap input[type=date] { position: absolute; right: 0; bottom: 0; width: 1px; height: 1px;
-                                        opacity: 0; pointer-events: none; }
-        .date-chip { display: inline-flex; align-items: center; gap: .4rem; padding: 2px 10px;
-                     border: 1px solid rgba(128,128,128,.6); border-radius: 999px; font-size: .9em; }
-    </style>
 </head>
 <body>
-    <header>
+    <header class="admin-header">
+        <button type="button" class="menu-toggle" id="menuToggle"
+                aria-label="Open admin menu" aria-controls="adminSidebar" aria-expanded="false">
+            <span></span><span></span><span></span>
+        </button>
         <h2>Admin Dashboard</h2>
-        <div>
-            <span><?= htmlspecialchars($_SESSION['admin_email']) ?></span>
-            <button id="pdfBtn">Report</button>
-            <button id="auditBtn">Activity Log</button>
-            <button id="logoutBtn">Log Out</button>
-        </div>
+        <span class="admin-email"><?= htmlspecialchars($_SESSION['admin_email']) ?></span>
     </header>
+
+    <div class="sidebar-backdrop" id="sidebarBackdrop" hidden></div>
+    <aside class="admin-sidebar" id="adminSidebar" aria-label="Admin navigation" aria-hidden="true">
+        <div class="sidebar-heading">
+            <div>
+                <strong>Admin Menu</strong>
+                <small>Library Management</small>
+            </div>
+            <button type="button" class="sidebar-close" id="sidebarClose" aria-label="Close menu">&times;</button>
+        </div>
+        <nav class="sidebar-nav">
+            <a href="#studentsSection" class="sidebar-link"><span class="nav-icon">♙</span> Students</a>
+            <a href="#pendingSection" class="sidebar-link"><span class="nav-icon">◷</span> Pending Validation</a>
+            <a href="#recentActivitySection" class="sidebar-link"><span class="nav-icon">↻</span> Recent Activities</a>
+            <a href="#manageFiltersSection" class="sidebar-link"><span class="nav-icon">☷</span> Manage Filters</a>
+            <div class="sidebar-divider"></div>
+            <button type="button" class="sidebar-action" id="pdfBtn"><span class="nav-icon">▤</span> Report</button>
+            <button type="button" class="sidebar-action" id="auditBtn"><span class="nav-icon">▣</span> Activity Logs</button>
+            <button type="button" class="sidebar-action logout-link" id="logoutBtn"><span class="nav-icon">⇥</span> Log Out</button>
+        </nav>
+    </aside>
 
     <main>
         <?php if ($flash): ?>
@@ -314,7 +341,7 @@ $auditLog = $conn->query("
         </div>
 
         <!-- Students table -->
-        <div class="panel">
+        <div class="panel" id="studentsSection">
             <h3>Students</h3>
             <input type="text" id="search" placeholder="Search name, ID, class, or hashed RFID...">
             <div class="scroll">
@@ -339,13 +366,13 @@ $auditLog = $conn->query("
                     <?php foreach ($students as $s): ?>
                         <tr data-id="<?= htmlspecialchars($s['student_id']) ?>"
                             data-name="<?= htmlspecialchars($s['name']) ?>"
-                            data-first="<?= htmlspecialchars($s['first_name']) ?>"
-                            data-middle="<?= htmlspecialchars($s['middle_name']) ?>"
-                            data-last="<?= htmlspecialchars($s['last_name']) ?>">
+                            data-first="<?= htmlspecialchars($s['first_name'] ?? '') ?>"
+                            data-middle="<?= htmlspecialchars($s['middle_name'] ?? '') ?>"
+                            data-last="<?= htmlspecialchars($s['last_name'] ?? '') ?>">
                             <td><?= htmlspecialchars($s['student_id']) ?></td>
                             <td><?= htmlspecialchars($s['name']) ?></td>
                             <td><?= htmlspecialchars(implode(' - ', array_filter([$s['grade'], $s['course'], $s['section']])) ?: '—') ?></td>
-                            <td><?= hide_uid($s['rfid_uid']) ?></td>
+                            <td><?= hide_uid($s['rfid_uid'] ?? '') ?></td>
                             <td>
                                 <span class="badge <?= $s['status'] === 'in' ? 'in' : 'out' ?>">
                                     <?= $s['status'] === 'in' ? 'Inside' : 'Outside' ?>
@@ -371,7 +398,7 @@ $auditLog = $conn->query("
         </div>
 
         <!-- Waiting for re-validation -->
-        <div class="panel">
+        <div class="panel" id="pendingSection">
             <h3>Waiting for Re-validation</h3>
             <div class="scroll">
                 <table class="limited">
@@ -386,9 +413,9 @@ $auditLog = $conn->query("
                         <tr data-rid="<?= $p['id'] ?>"
                             data-id="<?= htmlspecialchars($p['student_id']) ?>"
                             data-name="<?= htmlspecialchars($p['name']) ?>"
-                            data-first="<?= htmlspecialchars($p['first_name']) ?>"
-                            data-middle="<?= htmlspecialchars($p['middle_name']) ?>"
-                            data-last="<?= htmlspecialchars($p['last_name']) ?>"
+                            data-first="<?= htmlspecialchars($p['first_name'] ?? '') ?>"
+                            data-middle="<?= htmlspecialchars($p['middle_name'] ?? '') ?>"
+                            data-last="<?= htmlspecialchars($p['last_name'] ?? '') ?>"
                             data-level="<?= htmlspecialchars($p['level']) ?>"
                             data-grade="<?= htmlspecialchars($p['grade'] ?? '') ?>"
                             data-course="<?= htmlspecialchars($p['course'] ?? '') ?>"
@@ -399,7 +426,7 @@ $auditLog = $conn->query("
                             <td><?= $p['requested'] ?></td>
                             <td class="actions">
                                 <button type="button" class="review">Review &amp; Confirm</button>
-                                <form method="POST" style="display:inline">
+                                <form method="POST" class="inline-form">
                                     <input type="hidden" name="id" value="<?= $p['id'] ?>">
                                     <button type="submit" name="cancel_revalidation" class="delete"
                                             onclick="return confirm('Cancel this request?')">Cancel</button>
@@ -413,7 +440,7 @@ $auditLog = $conn->query("
         </div>
 
         <!-- Recent activity: log ins on the left, log outs on the right -->
-        <div class="panel">
+        <div class="panel" id="recentActivitySection">
             <h3>Recent Activity</h3>
 
             <!-- Search by student name / ID, or pick a date with the calendar icon -->
@@ -432,8 +459,19 @@ $auditLog = $conn->query("
                             <line x1="3" y1="10" x2="21" y2="10"/>
                         </svg>
                     </button>
-                    <input type="date" name="date" id="dateInput" value="<?= htmlspecialchars($fDate) ?>"
-                           max="<?= date('Y-m-d') ?>" tabindex="-1" aria-hidden="true">
+                    <input type="hidden" name="date" id="dateInput" value="<?= htmlspecialchars($fDate) ?>">
+                    <div class="cal-pop" id="calendar" hidden>
+                        <div class="cal-head">
+                            <button type="button" id="calPrev" aria-label="Previous month">&lsaquo;</button>
+                            <span id="calTitle"></span>
+                            <button type="button" id="calNext" aria-label="Next month">&rsaquo;</button>
+                        </div>
+                        <div class="cal-grid" id="calGrid"></div>
+                        <div class="cal-legend">
+                            <span><i class="dot-in"></i> Log in</span>
+                            <span><i class="dot-out"></i> Log out</span>
+                        </div>
+                    </div>
                 </div>
                 <button type="submit">Search</button>
                 <?php if ($fDate !== ''): ?>
@@ -451,9 +489,9 @@ $auditLog = $conn->query("
                 <a href="?range=all<?= $qParam ?>"   class="<?= !$fDate && $range === 'all'   ? 'active' : '' ?>">All</a>
             </div>
 
-            <div class="two-col" style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem;">
+            <div class="two-col activity-columns">
                 <?php foreach (['Logged In' => ['loginTable', $loggedIn], 'Logged Out' => ['logoutTable', $loggedOut]] as $title => [$tableId, $rows]): ?>
-                    <div style="min-width: 0;<?= $tableId === 'logoutTable' ? ' border-left: 1px solid rgba(128,128,128,.5); padding-left: 1rem;' : '' ?>">
+                    <div class="activity-column<?= $tableId === 'logoutTable' ? ' activity-column-secondary' : '' ?>">
                         <h4><?= $title ?></h4>
                         <div class="scroll">
                             <table id="<?= $tableId ?>" class="limited">
@@ -480,7 +518,7 @@ $auditLog = $conn->query("
         </div>
 
         <!-- Manage filters (these also feed the register dropdowns) -->
-        <div class="panel">
+        <div class="panel" id="manageFiltersSection">
             <h3>Manage Filters</h3>
 
             <form method="POST" class="filters">
@@ -656,6 +694,31 @@ $auditLog = $conn->query("
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.8.2/jspdf.plugin.autotable.min.js"></script>
     <script>
     const $ = id => document.getElementById(id);
+    // ---- Admin navigation drawer ----
+    const sidebar = $('adminSidebar');
+    const backdrop = $('sidebarBackdrop');
+
+    function setSidebar(open) {
+        sidebar.classList.toggle('is-open', open);
+        backdrop.hidden = !open;
+        sidebar.setAttribute('aria-hidden', String(!open));
+        $('menuToggle').setAttribute('aria-expanded', String(open));
+        $('menuToggle').setAttribute('aria-label', open ? 'Close admin menu' : 'Open admin menu');
+        document.body.classList.toggle('sidebar-open', open);
+    }
+
+    $('menuToggle').addEventListener('click', () => {
+        setSidebar(!sidebar.classList.contains('is-open'));
+    });
+    $('sidebarClose').addEventListener('click', () => setSidebar(false));
+    backdrop.addEventListener('click', () => setSidebar(false));
+    document.querySelectorAll('.sidebar-link').forEach(link => {
+        link.addEventListener('click', () => setSidebar(false));
+    });
+    document.addEventListener('keydown', e => {
+        if (e.key === 'Escape') setSidebar(false);
+    });
+
 
     // ---- "View all": every table.limited shows its first rows only ----
     const LIMIT = 5;
@@ -695,6 +758,7 @@ $auditLog = $conn->query("
 
     // ---- PDF report (summary, graph, students, log ins, log outs) ----
     $('pdfBtn').addEventListener('click', () => {
+        setSidebar(false);
         if (!window.jspdf) { alert('The PDF library could not load. Check your internet connection and refresh the page.'); return; }
         const doc = new window.jspdf.jsPDF();
         const filters = <?= json_encode('Grade: ' . ($fGrade ?: 'All') . ' | Course: ' . ($fCourse ?: 'All')) ?>;
@@ -949,15 +1013,84 @@ $auditLog = $conn->query("
         }
     });
 
-    // Recent Activity: calendar icon opens the date picker, picking a date runs the search
-    $('dateBtn').addEventListener('click', () => {
-        const input = $('dateInput');
-        try { input.showPicker(); } catch (e) { input.focus(); input.click(); }
+    // ---- Recent Activity calendar: dates with a log in / log out are marked with dots ----
+    const ACTIVITY = <?= json_encode($activityDates, JSON_FORCE_OBJECT) ?>;   // { '2026-11-27': { in: 3, out: 2 } }
+    const TODAY    = <?= json_encode(date('Y-m-d')) ?>;
+    const MONTHS   = ['January', 'February', 'March', 'April', 'May', 'June', 'July',
+                      'August', 'September', 'October', 'November', 'December'];
+    const pad = n => String(n).padStart(2, '0');
+
+    const [ty, tm] = TODAY.split('-').map(Number);
+    let [viewYear, viewMonth] = ($('dateInput').value || TODAY).split('-').map(Number);
+    viewMonth -= 1;                                          // 0-based month
+
+    function renderCalendar() {
+        const selected = $('dateInput').value;
+        $('calTitle').textContent = MONTHS[viewMonth] + ' ' + viewYear;
+        $('calNext').disabled = viewYear > ty || (viewYear === ty && viewMonth >= tm - 1);   // no future months
+
+        const grid = $('calGrid');
+        grid.replaceChildren();
+        for (const d of ['Su', 'Mo', 'Tu', 'We', 'Th', 'Fr', 'Sa']) {
+            const h = document.createElement('div');
+            h.className = 'dow';
+            h.textContent = d;
+            grid.appendChild(h);
+        }
+
+        const firstDay    = new Date(viewYear, viewMonth, 1).getDay();
+        const daysInMonth = new Date(viewYear, viewMonth + 1, 0).getDate();
+        for (let i = 0; i < firstDay; i++) grid.appendChild(document.createElement('div'));
+
+        for (let day = 1; day <= daysInMonth; day++) {
+            const key  = viewYear + '-' + pad(viewMonth + 1) + '-' + pad(day);
+            const info = ACTIVITY[key];
+            const btn  = document.createElement('button');
+            btn.type = 'button';
+            btn.className = 'cal-day' + (key === TODAY ? ' today' : '') + (key === selected ? ' selected' : '');
+            btn.textContent = day;
+            btn.disabled = key > TODAY;                      // future dates have no activity yet
+
+            if (info) {
+                const dots = document.createElement('span');
+                dots.className = 'dots';
+                if (info.in)  dots.appendChild(Object.assign(document.createElement('i'), { className: 'dot-in' }));
+                if (info.out) dots.appendChild(Object.assign(document.createElement('i'), { className: 'dot-out' }));
+                btn.appendChild(dots);
+                btn.title = (info.in || 0) + ' log in(s), ' + (info.out || 0) + ' log out(s)';
+            }
+
+            btn.addEventListener('click', () => {
+                $('dateInput').value = key;
+                $('activityForm').submit();
+            });
+            grid.appendChild(btn);
+        }
+    }
+
+    $('dateBtn').addEventListener('click', e => {
+        e.stopPropagation();
+        $('calendar').hidden = !$('calendar').hidden;
+        if (!$('calendar').hidden) renderCalendar();
     });
-    $('dateInput').addEventListener('change', () => $('activityForm').submit());
+    $('calPrev').addEventListener('click', () => {
+        if (--viewMonth < 0) { viewMonth = 11; viewYear--; }
+        renderCalendar();
+    });
+    $('calNext').addEventListener('click', () => {
+        if (++viewMonth > 11) { viewMonth = 0; viewYear++; }
+        renderCalendar();
+    });
+    // Close when clicking elsewhere or pressing Escape
+    document.addEventListener('click', e => {
+        if (!$('calendar').hidden && !$('calendar').contains(e.target)) $('calendar').hidden = true;
+    });
+    document.addEventListener('keydown', e => {
+        if (e.key === 'Escape') $('calendar').hidden = true;
+    });
 
     // Activity log pop-up
-    $('auditBtn').addEventListener('click', () => $('auditDialog').showModal());
+    $('auditBtn').addEventListener('click', () => { setSidebar(false); $('auditDialog').showModal(); });
     $('auditClose').addEventListener('click', () => $('auditDialog').close());
 
     // Delete (with confirmation)
